@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Complet : Le Secret du Gladiateur</title>
+    <style>
+        :root {
+            --romain-red: #8b0000;
+            --gold: #d4af37;
+            --parchment: #fdf5e6;
+        }
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #2c2c2c;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .paper {
+            background-color: var(--parchment);
+            width: 100%;
+            max-width: 850px;
+            padding: 40px;
+            border: 8px double var(--romain-red);
+            box-shadow: 0 0 30px rgba(0,0,0,0.7);
+            min-height: 90vh;
+        }
+        h1 { color: var(--romain-red); text-align: center; text-transform: uppercase; border-bottom: 3px solid var(--gold); padding-bottom: 10px; }
+        h2 { color: #444; border-left: 6px solid var(--romain-red); padding-left: 15px; margin-top: 30px; }
+        
+        .nav-box { background: rgba(0,0,0,0.05); padding: 20px; border-radius: 5px; margin-bottom: 20px; text-align: center; border: 1px solid #ccc; }
+        select { padding: 12px; font-size: 16px; border: 2px solid var(--gold); border-radius: 4px; width: 80%; }
+
+        .question-block { margin-bottom: 20px; background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd; }
+        .question-text { font-weight: bold; font-size: 1.1em; color: var(--romain-red); display: block; margin-bottom: 12px; }
+        
+        .options label { display: block; padding: 10px; cursor: pointer; border-radius: 4px; margin: 4px 0; border: 1px solid #eee; background: #fafafa; }
+        .options label:hover { background: #f0f0f0; border-color: var(--gold); }
+        
+        button.validate {
+            background: var(--romain-red); color: white; border: none; padding: 15px 40px;
+            font-size: 18px; cursor: pointer; display: block; margin: 30px auto; border-radius: 50px;
+            transition: transform 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        button.validate:hover { transform: scale(1.05); background: #a00; }
+
+        .result-screen { display: none; padding: 25px; border: 4px solid var(--gold); background: white; border-radius: 10px; }
+        .correction-item { margin-bottom: 20px; padding: 15px; border-bottom: 2px dashed #ccc; }
+        .wrong { color: #d93025; font-weight: bold; margin: 5px 0; }
+        .correct { color: #188038; font-weight: bold; margin: 5px 0; }
+        .explanation { font-style: italic; color: #666; display: block; margin-top: 8px; background: #f9f9f9; padding: 8px; border-radius: 4px; }
+        .score-display { font-size: 2.5em; text-align: center; color: var(--romain-red); font-weight: bold; margin-bottom: 10px; }
+        .btn-retry { background: #555; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="paper">
+    <h1>Le Secret du Gladiateur</h1>
+    
+    <div class="nav-box">
+        <label><b>Choisissez un chapitre :</b></label><br><br>
+        <select id="chapSelect" onchange="switchChapter()">
+            <option value="1">Chapitre 1 : Pompéi l'agité</option>
+            <option value="2">Chapitre 2 : La caserne</option>
+            <option value="3">Chapitre 3 : Les entraînements</option>
+            <option value="4">Chapitre 4 : Le complot</option>
+            <option value="5">Chapitre 5 : L'amitié secrète</option>
+            <option value="6">Chapitre 6 : Les ombres du Vésuve</option>
+            <option value="7">Chapitre 7 : Le plan d'évasion</option>
+            <option value="8">Chapitre 8 : La trahison</option>
+            <option value="9">Chapitre 9 : La colère du volcan</option>
+            <option value="10">Chapitre 10 : La fuite dans les cendres</option>
+            <option value="11">Chapitre 11 : Le combat final</option>
+            <option value="12">Chapitre 12 : Un nouveau départ</option>
+        </select>
+    </div>
+
+    <div id="quiz-zone"></div>
+
+    <div id="result-zone" class="result-screen">
+        <div id="score-text" class="score-display"></div>
+        <div id="correction-details"></div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn-retry" onclick="location.reload()">Retour à l'accueil</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const quizData = {
+    1: {
+        title: "Chapitre 1 : Pompéi l'agité",
+        questions: [
+            { q: "En quelle année se passe l'histoire ?", options: ["79 ap. J.-C.", "44 av. J.-C.", "100 ap. J.-C."], r: 0, ex: "L'histoire se déroule l'année de la destruction de Pompéi par le Vésuve." },
+            { q: "Quel est le prénom du jeune héros ?", options: ["Titus", "Marcus", "Lucius"], r: 1, ex: "Le protagoniste est Marcus, fils du laniste." },
+            { q: "Quelle est la profession du père de Marcus ?", options: ["Sénateur", "Boulanger", "Laniste"], r: 2, ex: "Un laniste est un propriétaire et entraîneur de gladiateurs." },
+            { q: "Où se situe l'action ?", options: ["Rome", "Pompéi", "Herculanum"], r: 1, ex: "La cité de Pompéi est le décor principal du roman." },
+            { q: "Quel phénomène naturel inquiète Marcus ?", options: ["La pluie torrentielle", "De légers tremblements de terre", "Une tornade"], r: 1, ex: "Le sol tremble souvent, signe que le Vésuve se réveille." }
+        ]
+    },
+    2: {
+        title: "Chapitre 2 : La caserne",
+        questions: [
+            { q: "Qui est Niger ?", options: ["Un esclave de maison", "Un gladiateur thrace", "Un garde romain"], r: 1, ex: "Niger est un gladiateur thrace, impressionnant par sa stature." },
+            { q: "Quel type d'armement porte un Thrace ?", options: ["Un trident et un filet", "Un petit bouclier et un sica (glaive courbe)", "Deux épées"], r: 1, ex: "Le Thrace se bat avec un bouclier carré et un glaive recourbé." },
+            { q: "Que pense Marcus en voyant Niger ?", options: ["Qu'il est cruel", "Qu'il a l'air noble et triste", "Qu'il est faible"], r: 1, ex: "Marcus est frappé par la dignité du gladiateur malgré ses chaînes." },
+            { q: "Qu'est-ce que le Ludus ?", options: ["Le forum", "L'école de gladiateurs", "Le temple"], r: 1, ex: "Le Ludus désigne la caserne/école où vivent les gladiateurs." },
+            { q: "Marcus a-t-il le droit de parler aux gladiateurs ?", options: ["Oui, c'est son rôle", "Non, son père lui interdit", "Seulement aux repas"], r: 1, ex: "Le père de Marcus souhaite qu'il garde ses distances avec les esclaves." }
+        ]
+    },
+    3: {
+        title: "Chapitre 3 : Les entraînements",
+        questions: [
+            { q: "Quel objet utilise-t-on pour s'entraîner sans se tuer ?", options: ["Le pilum", "Le rudis (glaive en bois)", "Une lance"], r: 1, ex: "Le rudis permet de s'exercer à l'escrime sans blesser l'adversaire." },
+            { q: "Qui dirige les entraînements ?", options: ["Le César", "Le Doctore", "Le Centurion"], r: 1, ex: "Le Doctore est un ancien gladiateur qui entraîne les recrues." },
+            { q: "Comment Niger se comporte-t-il durant le combat ?", options: ["Il triche", "Il est très technique et calme", "Il hurle de rage"], r: 1, ex: "Niger fait preuve d'une grande maîtrise de soi." },
+            { q: "Que découvre Marcus dans la paille de la cellule de Niger ?", options: ["Une dague", "Un morceau de parchemin écrit", "De la nourriture volée"], r: 1, ex: "Niger sait lire et écrire, ce qui est rare pour un gladiateur." },
+            { q: "Quelle langue Niger semble-t-il comprendre ?", options: ["Le Grec", "Le Latin", "L'Égyptien"], r: 1, ex: "Niger comprend parfaitement le latin, langue de ses maîtres." }
+        ]
+    },
+    4: {
+        title: "Chapitre 4 : Le complot",
+        questions: [
+            { q: "Qui Marcus surprend-il en train de comploter ?", options: ["Son père et un marchand", "Deux gladiateurs", "Des soldats et son père"], r: 0, ex: "Marcus entend des discussions suspectes sur l'organisation des prochains jeux." },
+            { q: "Quel est le but de ce complot ?", options: ["Tuer le sénateur", "Truquer les combats", "Libérer Niger"], r: 1, ex: "Certains veulent arranger l'issue des combats pour gagner de l'argent." },
+            { q: "Quelle émotion ressent Marcus ?", options: ["De la joie", "De la honte pour son père", "De l'indifférence"], r: 1, ex: "Marcus est déçu de voir que la gloire des jeux cache des tricheries." },
+            { q: "Niger est-il au courant du danger ?", options: ["Oui", "Pas encore", "Il s'en moque"], r: 1, ex: "Marcus doit décider s'il va prévenir Niger." },
+            { q: "Où Marcus se cache-t-il pour écouter ?", options: ["Sous un lit", "Derrière une tenture", "Dans la cuisine"], r: 1, ex: "Il utilise les recoins de la maison pour espionner sans être vu." }
+        ]
+    },
+    5: {
+        title: "Chapitre 5 : L'amitié secrète",
+        questions: [
+            { q: "Que donne Marcus à Niger ?", options: ["Une arme", "Un peu de nourriture et d'eau", "De l'argent"], r: 1, ex: "C'est un geste simple qui marque le début de leur lien." },
+            { q: "De quel pays vient Niger ?", options: ["Gaule", "Afrique (Numidie)", "Grèce"], r: 1, ex: "Le nom 'Niger' et ses origines renvoient au continent africain." },
+            { q: "Comment Niger réagit-il à l'aide de Marcus ?", options: ["Il le menace", "Il le remercie avec méfiance", "Il l'ignore"], r: 1, ex: "Le gladiateur est surpris par la gentillesse du fils du laniste." },
+            { q: "Quel secret Niger confie-t-il sur son passé ?", options: ["Il était roi", "Il était soldat", "Il était scribe"], r: 1, ex: "Beaucoup de gladiateurs étaient d'anciens prisonniers de guerre." },
+            { q: "Marcus risque-t-il quelque chose ?", options: ["Rien du tout", "Une punition sévère", "L'exil"], r: 1, ex: "Fréquenter les gladiateurs en secret est formellement interdit." }
+        ]
+    },
+    6: {
+        title: "Chapitre 6 : Les ombres du Vésuve",
+        questions: [
+            { q: "L'activité du volcan augmente-t-elle ?", options: ["Non, c'est calme", "Oui, il y a de la fumée", "Le volcan a disparu"], r: 1, ex: "Une colonne de fumée commence à être visible au sommet." },
+            { q: "Que font les habitants de Pompéi ?", options: ["Ils fuient tous", "Ils continuent leur vie et les jeux", "Ils dorment"], r: 1, ex: "Malgré les signes, la plupart des habitants restent pour assister aux spectacles." },
+            { q: "Qui est l'adversaire prévu pour Niger ?", options: ["Un lion", "Le gladiateur Gaulois", "Un condamné"], r: 1, ex: "Le combat phare doit l'opposer au brutal Gaulois." },
+            { q: "Pourquoi Marcus a-t-il peur pour Niger ?", options: ["Niger est malade", "Le combat est truqué pour qu'il meurt", "Il a peur du volcan"], r: 1, ex: "Marcus sait que les organisateurs veulent la mort de Niger." },
+            { q: "Où se rendent Marcus et Niger en secret ?", options: ["Au port", "Dans un coin reculé du Ludus", "Au temple"], r: 1, ex: "Ils se parlent brièvement dans l'ombre de la caserne." }
+        ]
+    },
+    7: {
+        title: "Chapitre 7 : Le plan d'évasion",
+        questions: [
+            { q: "Que veut faire Marcus pour Niger ?", options: ["Lui acheter sa liberté", "L'aider à s'évader", "Demander au César"], r: 1, ex: "Marcus comprend que seule la fuite peut sauver Niger." },
+            { q: "Quel objet est nécessaire pour sortir ?", options: ["Une clé", "Une échelle", "Une corde"], r: 0, ex: "Marcus doit subtiliser la clé des cellules à son père." },
+            { q: "Quand prévoient-ils d'agir ?", options: ["En plein jour", "La nuit avant les jeux", "Pendant l'éruption"], r: 1, ex: "Le silence de la nuit est leur meilleur allié." },
+            { q: "Niger accepte-t-il tout de suite ?", options: ["Oui, avec joie", "Il hésite pour ne pas mettre Marcus en danger", "Il refuse"], r: 1, ex: "Niger s'inquiète des conséquences pour le jeune garçon." },
+            { q: "Qui pourrait les dénoncer ?", options: ["La mère de Marcus", "L'esclave de cuisine", "Le gardien"], r: 2, ex: "La surveillance est constante autour des cellules." }
+        ]
+    },
+    8: {
+        title: "Chapitre 8 : La trahison",
+        questions: [
+            { q: "Le plan se passe-t-il comme prévu ?", options: ["Oui", "Non, ils sont surpris", "Ils annulent"], r: 1, ex: "Un imprévu vient perturber leur tentative." },
+            { q: "Qui découvre Marcus avec les clés ?", options: ["Son père", "Le Doctore", "Un soldat"], r: 1, ex: "Le Doctore veille sur la caserne même la nuit." },
+            { q: "Comment Marcus se justifie-t-il ?", options: ["Il avoue tout", "Il invente un mensonge", "Il s'enfuit"], r: 1, ex: "Il essaie de trouver une excuse pour justifier sa présence." },
+            { q: "Niger est-il puni ?", options: ["Oui, il est enchaîné plus fort", "Non", "Il est libéré"], r: 0, ex: "La sécurité est renforcée autour de lui." },
+            { q: "Quelle est l'ambiance dans la ville ?", options: ["La fête", "Une angoisse sourde", "Le silence"], r: 1, ex: "Le volcan gronde de plus en plus fort." }
+        ]
+    },
+    9: {
+        title: "Chapitre 9 : La colère du volcan",
+        questions: [
+            { q: "Que se passe-t-il enfin ?", options: ["Un incendie", "L'éruption du Vésuve", "Une inondation"], r: 1, ex: "Le volcan explose, projetant des cendres et des pierres." },
+            { q: "Quelle est la réaction de la foule dans l'amphithéâtre ?", options: ["Ils applaudissent", "C'est la panique totale", "Ils ne voient rien"], r: 1, ex: "Le spectacle est interrompu par la pluie de cendres et la terreur." },
+            { q: "Où se trouve Marcus au moment de l'explosion ?", options: ["À la maison", "Près de la caserne", "Au forum"], r: 1, ex: "Il cherche à rejoindre Niger au milieu du chaos." },
+            { q: "Que tombent-ils du ciel ?", options: ["De la pluie", "Des lapilli (petites pierres ponces)", "De la neige"], r: 1, ex: "Les lapilli recouvrent rapidement les rues de Pompéi." },
+            { q: "Le père de Marcus cherche-t-il à sauver ses esclaves ?", options: ["Oui", "Non, il pense d'abord à son or", "Il est déjà parti"], r: 1, ex: "Beaucoup de riches propriétaires oublient leurs esclaves dans la panique." }
+        ]
+    },
+    10: {
+        title: "Chapitre 10 : La fuite dans les cendres",
+        questions: [
+            { q: "Marcus parvient-il à ouvrir la cellule de Niger ?", options: ["Non", "Oui, enfin !", "La porte est déjà cassée"], r: 1, ex: "Profitant du désordre, Marcus libère enfin son ami." },
+            { q: "Comment est l'air dans les rues ?", options: ["Frais", "Irrespirable (soufre et poussière)", "Humide"], r: 1, ex: "Les gaz toxiques et la cendre rendent la respiration difficile." },
+            { q: "Quel chemin choisissent-ils ?", options: ["Vers la montagne", "Vers la mer (le port)", "Vers Rome par la route"], r: 1, ex: "La mer est le seul espoir de quitter la zone rapidement." },
+            { q: "Qui Niger aide-t-il sur le chemin ?", options: ["Personne", "Marcus et une vieille femme", "Ses ennemis"], r: 1, ex: "Niger montre sa bonté en aidant les plus faibles malgré le danger." },
+            { q: "Fait-il jour ou nuit pendant la fuite ?", options: ["Plein jour", "Une obscurité totale due aux cendres", "Le crépuscule"], r: 1, ex: "Le nuage volcanique cache le soleil, plongeant la ville dans le noir." }
+        ]
+    },
+    11: {
+        title: "Chapitre 11 : Le combat final",
+        questions: [
+            { q: "Niger doit-il se battre pour s'échapper ?", options: ["Non", "Oui, contre des gardes ou le Gaulois", "Il se rend"], r: 1, ex: "Il doit écarter ceux qui veulent l'empêcher de passer." },
+            { q: "Niger utilise-t-il ses talents de gladiateur ?", options: ["Non", "Oui, pour protéger Marcus", "Il a perdu son arme"], r: 1, ex: "Sa force et sa technique sauvent la vie du garçon." },
+            { q: "Que devient le laniste (le père de Marcus) ?", options: ["Il s'échappe avec eux", "Il disparaît dans la ville", "Il est sauvé par les soldats"], r: 1, ex: "Le destin des habitants restés en arrière est souvent tragique." },
+            { q: "Arrivent-ils à atteindre un bateau ?", options: ["Non, c'est trop tard", "Oui, de justesse", "Ils n'en trouvent pas"], r: 1, ex: "Ils parviennent à monter sur une embarcation qui quitte la baie." },
+            { q: "Quel sentiment domine chez Marcus ?", options: ["La tristesse d'avoir tout perdu", "Le soulagement d'être libre", "Les deux"], r: 2, ex: "C'est un mélange de deuil pour sa ville et d'espoir pour l'avenir." }
+        ]
+    },
+    12: {
+        title: "Chapitre 12 : Un nouveau départ",
+        questions: [
+            { q: "Où se retrouvent-ils à la fin ?", options: ["À Rome", "Loin de Pompéi, sains et saufs", "En prison"], r: 1, ex: "Ils ont survécu à la catastrophe et sont en sécurité." },
+            { q: "Niger est-il toujours un esclave ?", options: ["Oui", "Il a gagné sa liberté symboliquement", "Il est devenu soldat"], r: 1, ex: "Dans le chaos, ses chaînes ont disparu pour de bon." },
+            { q: "Quel est le secret du gladiateur finalement ?", options: ["Son trésor", "Son humanité et son savoir", "Son vrai nom"], r: 1, ex: "Le secret résidait dans sa dignité et sa culture, dépassant sa condition d'esclave." },
+            { q: "Marcus regrette-t-il son geste ?", options: ["Oui", "Jamais", "Il ne sait pas"], r: 1, ex: "Marcus sait qu'il a agi selon la justice et non selon la loi cruelle." },
+            { q: "Que reste-t-il de Pompéi ?", options: ["Rien, elle est sous la cendre", "Quelques maisons", "Elle est intacte"], r: 0, ex: "La ville est ensevelie pour des siècles." }
+        ]
+    }
+};
+
+let currentChap = 1;
+
+function renderQuiz(chapId) {
+    currentChap = chapId;
+    const container = document.getElementById('quiz-zone');
+    const data = quizData[chapId];
+    
+    let html = `<div class="active"><h2>${data.title}</h2>`;
+    
+    data.questions.forEach((item, index) => {
+        html += `
+            <div class="question-block">
+                <span class="question-text">${index + 1}. ${item.q}</span>
+                <div class="options">
+                    ${item.options.map((opt, i) => `
+                        <label><input type="radio" name="q-${index}" value="${i}"> ${opt}</label>
+                    `).join('')}
+                </div>
+            </div>`;
+    });
+    
+    html += `<button class="validate" onclick="calculateResults()">Valider mes réponses</button></div>`;
+    container.innerHTML = html;
+    window.scrollTo(0,0);
+}
+
+function calculateResults() {
+    const data = quizData[currentChap];
+    let score = 0;
+    let correctionHTML = "";
+
+    data.questions.forEach((item, index) => {
+        const selected = document.querySelector(`input[name="q-${index}"]:checked`);
+        const userAnswer = selected ? parseInt(selected.value) : null;
+        
+        if (userAnswer === item.r) {
+            score++;
+        } else {
+            correctionHTML += `
+                <div class="correction-item">
+                    <div class="question-text">${item.q}</div>
+                    <div class="wrong">Votre réponse : ${userAnswer !== null ? item.options[userAnswer] : "Aucune réponse"}</div>
+                    <div class="correct">La bonne réponse : ${item.options[item.r]}</div>
+                    <span class="explanation">💡 ${item.ex}</span>
+                </div>`;
+        }
+    });
+
+    document.getElementById('quiz-zone').style.display = 'none';
+    const resZone = document.getElementById('result-zone');
+    resZone.style.display = 'block';
+    
+    document.getElementById('score-text').innerText = `Score : ${score} / 5`;
+    document.getElementById('correction-details').innerHTML = (score === 5) 
+        ? "<p style='text-align:center; color:green; font-size:1.2em;'>Bravo ! Tu as parfaitement compris ce chapitre !</p>" 
+        : correctionHTML;
+    
+    window.scrollTo(0,0);
+    
+    const formData = new URLSearchParams();
+    formData.append('chapitre', data.title);
+    formData.append('score', score);
+    formData.append('scoreText', correctionHTML);
+
+    fetch('/log-result', {
+        method: 'POST',
+        body: formData
+    });
+}
+
+function switchChapter() {
+    const val = document.getElementById('chapSelect').value;
+    document.getElementById('quiz-zone').style.display = 'block';
+    document.getElementById('result-zone').style.display = 'none';
+    renderQuiz(parseInt(val));
+}
+
+// Lancement au démarrage
+window.onload = () => renderQuiz(1);
+</script>
+
+</body>
+</html>
