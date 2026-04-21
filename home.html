@@ -54,7 +54,7 @@
         
         .books-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: 1fr;
             gap: 30px;
             margin-bottom: 50px;
         }
@@ -67,17 +67,20 @@
             transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
             position: relative;
+            display: flex;
+            flex-direction: row;
+            height: 350px;
         }
         
         .book-card:hover {
-            transform: translateY(-10px);
+            transform: translateY(-5px);
             box-shadow: 0 12px 24px rgba(0,0,0,0.4);
         }
         
         .book-cover {
-            width: 100%;
-            height: 300px;
-            background: linear-gradient(135deg, var(--romain-red), var(--gold));
+            width: 250px;
+            height: 350px;
+            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -88,6 +91,8 @@
             padding: 20px;
             position: relative;
             overflow: hidden;
+            background: linear-gradient(135deg, var(--romain-red), var(--gold));
+            order: 2;
         }
         
         .book-cover img {
@@ -104,12 +109,13 @@
             right: 0;
             bottom: 0;
             background: rgba(0,0,0,0.1);
+            z-index: 1;
         }
         
         .status-badge {
             position: absolute;
             top: 10px;
-            right: 10px;
+            left: 10px;
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 0.9em;
@@ -134,6 +140,11 @@
         
         .book-info {
             padding: 25px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            order: 1;
         }
         
         .book-title {

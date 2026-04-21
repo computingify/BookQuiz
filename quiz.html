@@ -13,10 +13,22 @@
         body {
             font-family: 'Georgia', serif;
             background-color: #2c2c2c;
+            background-size: cover;
+            background-attachment: fixed;
             display: flex;
             justify-content: center;
             padding: 20px;
             margin: 0;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: -1;
         }
         .paper {
             background-color: var(--parchment);
@@ -125,6 +137,15 @@
         }
         
         try {
+            // Charger les données du livre pour obtenir la couverture
+            const booksResponse = await fetch('/api/books');
+            const booksData = await booksResponse.json();
+            const book = booksData.books.find(b => b.id === currentBookId);
+            
+            if (book && book.cover) {
+                document.body.style.backgroundImage = `url('${book.cover}')`;
+            }
+            
             const response = await fetch(`/api/quiz/${currentBookId}`);
             if (!response.ok) throw new Error('Quiz non trouvé');
             
@@ -133,7 +154,6 @@
             document.getElementById('loading').style.display = 'none';
             
             populateChapterSelect();
-            renderQuiz(1);
             updateMenuStatus();
             
         } catch (error) {
@@ -165,6 +185,8 @@
             const select = document.getElementById('chapSelect');
             const options = select.options;
             
+            let firstUncompletedChapter = null;
+            
             for (let i = 0; i < options.length; i++) {
                 const opt = options[i];
                 const chapId = opt.value;
@@ -174,7 +196,15 @@
                     if (!opt.text.includes('✅')) {
                         opt.text = "✅ " + opt.text;
                     }
+                } else if (!firstUncompletedChapter && chapter) {
+                    firstUncompletedChapter = chapter.id;
                 }
+            }
+            
+            // Ouvrir le premier chapitre non complété
+            if (firstUncompletedChapter) {
+                select.value = firstUncompletedChapter;
+                renderQuiz(firstUncompletedChapter);
             }
         } catch (err) {
             console.error("Erreur de mise à jour du menu:", err);

@@ -3,11 +3,11 @@
     {
       "id": "le-secret-du-gladiateur",
       "title": "Le Secret du Gladiateur",
-      "author": "Auteur inconnu",
+      "author": "Laure Bazire",
       "description": "Un roman historique palpitant sur Pompéi et la destruction du Vésuve. Suivez Marcus et Niger dans leur quête de liberté au cœur de la catastrophe.",
-      "cover": "",
+      "cover": "books_data/le-secret-du-gladiateur/le-secret-du-gladiateur-cover.jpg",
       "chapters": 12,
-      "quizFile": "quiz-gladiateur.json"
+      "quizFile": "books_data/le-secret-du-gladiateur/quiz.json"
     }
   ]
 }

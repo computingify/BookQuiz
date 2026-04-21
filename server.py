@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 
 RESULTS_FILE = "results.json"
-BOOKS_FILE = "books.json"
+BOOKS_FILE = "books_data/books.json"
 PORT = 5000
 
 class QuizHandler(http.server.SimpleHTTPRequestHandler):
@@ -88,11 +88,22 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
             
             # Charger le fichier quiz
             quiz_file = book['quizFile']
-            if not os.path.exists(quiz_file):
+            
+            # Résoudre le chemin de manière sécurisée
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            quiz_path = os.path.join(base_dir, quiz_file)
+            
+            # Vérifier que le chemin reste dans le répertoire de base
+            quiz_path = os.path.abspath(quiz_path)
+            if not quiz_path.startswith(base_dir):
+                self.send_error(403, "Accès refusé")
+                return
+            
+            if not os.path.exists(quiz_path):
                 self.send_error(404, "Quiz non trouvé")
                 return
             
-            with open(quiz_file, 'r', encoding='utf-8') as f:
+            with open(quiz_path, 'r', encoding='utf-8') as f:
                 quiz_data = json.load(f)
             
             self.send_response(200)
