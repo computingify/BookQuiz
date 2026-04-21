@@ -11,7 +11,9 @@ PORT = 5000
 
 class QuizHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
-        if self.path == '/api/books':
+        if self.path == '/':
+            self.path = '/home.html'
+        elif self.path == '/api/books':
             self.send_books_list()
         elif self.path.startswith('/api/quiz/'):
             book_id = self.path.split('/api/quiz/')[1]
@@ -20,6 +22,9 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
             book_id = self.path.split('/api/status/')[1]
             self.send_book_status(book_id)
         else:
+            return http.server.SimpleHTTPRequestHandler.do_GET(self)
+        
+        if self.path == '/home.html':
             return http.server.SimpleHTTPRequestHandler.do_GET(self)
 
     def do_POST(self):
