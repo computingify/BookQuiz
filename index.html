@@ -215,6 +215,31 @@ const quizData = {
 
 let currentChap = 1;
 
+// --- NOUVELLE FONCTION POUR LES COCHES VERTES ---
+async function updateMenuStatus() {
+    try {
+        const response = await fetch('/get-status');
+        const successfulChapters = await response.json();
+        
+        const select = document.getElementById('chapSelect');
+        const options = select.options;
+
+        for (let i = 0; i < options.length; i++) {
+            const opt = options[i];
+            const chapTitle = quizData[opt.value].title;
+            
+            // Si le chapitre est réussi et n'a pas déjà de coche
+            if (successfulChapters.includes(chapTitle)) {
+                if (!opt.text.includes('✅')) {
+                    opt.text = "✅ " + opt.text;
+                }
+            }
+        }
+    } catch (err) {
+        console.error("Erreur de mise à jour du menu:", err);
+    }
+}
+
 function renderQuiz(chapId) {
     currentChap = chapId;
     const container = document.getElementById('quiz-zone');
@@ -239,7 +264,7 @@ function renderQuiz(chapId) {
     window.scrollTo(0,0);
 }
 
-function calculateResults() {
+async function calculateResults() {
     const data = quizData[currentChap];
     let score = 0;
     let correctionHTML = "";
@@ -275,12 +300,15 @@ function calculateResults() {
     const formData = new URLSearchParams();
     formData.append('chapitre', data.title);
     formData.append('score', score);
-    formData.append('scoreText', correctionHTML);
 
-    fetch('/log-result', {
+    // Envoi du résultat au serveur
+    await fetch('/log-result', {
         method: 'POST',
         body: formData
     });
+
+    // Mise à jour immédiate des coches après le résultat
+    updateMenuStatus();
 }
 
 function switchChapter() {
@@ -290,8 +318,11 @@ function switchChapter() {
     renderQuiz(parseInt(val));
 }
 
-// Lancement au démarrage
-window.onload = () => renderQuiz(1);
+// Lancement au démarrage : rendu du quiz + mise à jour des coches
+window.onload = () => {
+    renderQuiz(1);
+    updateMenuStatus();
+};
 </script>
 
 </body>
