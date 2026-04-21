@@ -1,0 +1,13 @@
+{
+  "books": [
+    {
+      "id": "le-secret-du-gladiateur",
+      "title": "Le Secret du Gladiateur",
+      "author": "Auteur inconnu",
+      "description": "Un roman historique palpitant sur Pompéi et la destruction du Vésuve. Suivez Marcus et Niger dans leur quête de liberté au cœur de la catastrophe.",
+      "cover": "",
+      "chapters": 12,
+      "quizFile": "quiz-gladiateur.json"
+    }
+  ]
+}

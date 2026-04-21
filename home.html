@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliothèque de Quiz</title>
+    <style>
+        :root {
+            --romain-red: #8b0000;
+            --gold: #d4af37;
+            --parchment: #fdf5e6;
+            --dark: #2c2c2c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            background-color: var(--dark);
+            color: #333;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 30px 0;
+            border-bottom: 4px solid var(--gold);
+        }
+        
+        .header h1 {
+            color: var(--parchment);
+            font-size: 3em;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: var(--gold);
+            font-size: 1.2em;
+            font-style: italic;
+        }
+        
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .book-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .book-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.4);
+        }
+        
+        .book-cover {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, var(--romain-red), var(--gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3em;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .book-cover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.1);
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            z-index: 10;
+        }
+        
+        .status-badge.completed {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .status-badge.in-progress {
+            background: #FF9800;
+            color: white;
+        }
+        
+        .status-badge.not-started {
+            background: #9E9E9E;
+            color: white;
+        }
+        
+        .book-info {
+            padding: 25px;
+        }
+        
+        .book-title {
+            font-size: 1.5em;
+            color: var(--romain-red);
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .book-author {
+            color: #888;
+            font-size: 0.95em;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+        
+        .book-description {
+            color: #555;
+            font-size: 0.95em;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .progress-section {
+            margin: 15px 0;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--romain-red), var(--gold));
+            transition: width 0.3s ease;
+        }
+        
+        .btn-start {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: var(--romain-red);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 15px;
+        }
+        
+        .btn-start:hover {
+            background: #a00;
+        }
+        
+        .btn-continue {
+            background: var(--gold);
+            color: var(--romain-red);
+        }
+        
+        .btn-continue:hover {
+            background: #e6c200;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--parchment);
+        }
+        
+        .empty-state h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            color: var(--gold);
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--parchment);
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>📚 Bibliothèque de Quiz</h1>
+        <p>Explorez des histoires captivantes à travers des quiz interactifs</p>
+    </div>
+    
+    <div id="in-progress-section"></div>
+    <div id="completed-section"></div>
+    <div id="loading" class="loading">Chargement de la bibliothèque...</div>
+</div>
+
+<script>
+    async function loadBooks() {
+        try {
+            const response = await fetch('/api/books');
+            const data = await response.json();
+            
+            const inProgressBooks = data.books.filter(b => b.in_progress && !b.is_completed);
+            const completedBooks = data.books.filter(b => b.is_completed);
+            const notStartedBooks = data.books.filter(b => !b.in_progress && !b.is_completed);
+            
+            document.getElementById('loading').style.display = 'none';
+            
+            renderSection('En cours...', inProgressBooks, 'in-progress-section');
+            renderSection('Terminés', completedBooks, 'completed-section');
+            renderSection('Non commencés', notStartedBooks, 'not-started-section');
+            
+        } catch (error) {
+            console.error('Erreur:', error);
+            document.getElementById('loading').innerHTML = '<p>Erreur lors du chargement de la bibliothèque</p>';
+        }
+    }
+    
+    function renderSection(title, books, elementId) {
+        const container = document.getElementById(elementId);
+        
+        if (books.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        let html = `<h2 class="section-title">${title}</h2><div class="books-grid">`;
+        
+        books.forEach(book => {
+            const progressPercent = Math.round((book.completed_chapters / book.total_chapters) * 100);
+            const statusClass = book.is_completed ? 'completed' : book.in_progress ? 'in-progress' : 'not-started';
+            const statusText = book.is_completed ? '✅ Terminé' : book.in_progress ? '🔄 En cours' : '▶ Commencer';
+            const btnClass = book.in_progress ? 'btn-continue' : '';
+            
+            html += `
+                <div class="book-card" onclick="openQuiz('${book.id}')">
+                    <div class="book-cover">
+                        ${book.cover ? `<img src="${book.cover}" alt="${book.title}">` : book.title}
+                        <div class="status-badge ${statusClass}">${statusText}</div>
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title">${book.title}</div>
+                        <div class="book-author">par ${book.author}</div>
+                        <div class="book-description">${book.description}</div>
+                        <div class="progress-section">
+                            <div class="progress-label">
+                                <span>Progression</span>
+                                <span>${book.completed_chapters}/${book.total_chapters}</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                            </div>
+                        </div>
+                        <button class="btn-start ${btnClass}">${book.is_completed ? 'Revoir le quiz' : 'Accéder au quiz'}</button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+    }
+    
+    function openQuiz(bookId) {
+        window.location.href = `/quiz.html?book=${bookId}`;
+    }
+    
+    // Charger les livres au démarrage
+    window.addEventListener('load', loadBooks);
+</script>
+
+</body>
+</html>
