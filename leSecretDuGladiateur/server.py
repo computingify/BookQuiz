@@ -6,12 +6,23 @@ import os
 import secrets
 import hashlib
 from datetime import datetime
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import smtplib
 
 RESULTS_FILE = "results.json"
 BOOKS_FILE = "books_data/books.json"
 USERS_FILE = "books_data/users.json"
 SESSIONS_FILE = "sessions.json"
 PORT = 5000
+
+# Configuration email (à adapter selon votre serveur)
+EMAIL_CONFIG = {
+    "smtp_server": "localhost",  # À remplacer par votre serveur SMTP
+    "smtp_port": 587,
+    "sender_email": "quiz@example.com",
+    "sender_password": ""
+}
 
 class QuizHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
@@ -56,6 +67,7 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
         if not user:
             self.send_error(401)
             return
+        # Stocker l'utilisateur pour utilisation dans la méthode
         self.current_user = user
         return method(*args)
 
@@ -70,6 +82,7 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
 
     def get_authenticated_user(self):
         """Récupérer l'utilisateur depuis le token session"""
+        # Récupérer le token depuis les cookies
         cookies = self.headers.get('Cookie', '')
         session_token = None
         for cookie in cookies.split(';'):
@@ -80,13 +93,16 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
         if not session_token:
             return None
         
+        # Charger la session
         if os.path.exists(SESSIONS_FILE):
             with open(SESSIONS_FILE, 'r', encoding='utf-8') as f:
                 sessions = json.load(f)
                 if session_token in sessions:
                     session = sessions[session_token]
+                    # Vérifier si la session n'a pas expiré (24h)
                     created_time = datetime.fromisoformat(session['created_at'])
                     if (datetime.now() - created_time).total_seconds() < 86400:
+                        # Charger les infos utilisateur
                         return self.get_user_by_id(session['user_id'])
         
         return None
@@ -110,6 +126,7 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
             login = params.get('login', '')
             password = params.get('password', '')
             
+            # Charger les utilisateurs
             if not os.path.exists(USERS_FILE):
                 self.send_json({"success": False, "message": "Identifiants invalides"}, 401)
                 return
@@ -117,6 +134,7 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
             with open(USERS_FILE, 'r', encoding='utf-8') as f:
                 users = json.load(f)
             
+            # Chercher l'utilisateur par login
             user_id = None
             for uid, user in users.items():
                 if user['login'] == login:
@@ -128,11 +146,14 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
                 return
             
             user = users[user_id]
+            
+            # Vérifier le mot de passe
             hashed = hashlib.sha256(password.encode()).hexdigest()
             if hashed != user['password_hash']:
                 self.send_json({"success": False, "message": "Identifiants invalides"}, 401)
                 return
             
+            # Créer une session
             session_token = secrets.token_urlsafe(32)
             if not os.path.exists(SESSIONS_FILE):
                 sessions = {}
@@ -148,6 +169,7 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
             with open(SESSIONS_FILE, 'w', encoding='utf-8') as f:
                 json.dump(sessions, f, indent=2)
             
+            # Envoyer la réponse avec le token
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.send_header('Set-Cookie', f'session_token={session_token}; Path=/; HttpOnly; Max-Age=86400')
@@ -182,12 +204,14 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json({"success": False, "message": "Tous les champs sont requis"}, 400)
                 return
             
+            # Charger les utilisateurs existants
             if os.path.exists(USERS_FILE):
                 with open(USERS_FILE, 'r', encoding='utf-8') as f:
                     users = json.load(f)
             else:
                 users = {}
             
+            # Vérifier si le login existe déjà
             for user in users.values():
                 if user['login'] == login:
                     self.send_json({"success": False, "message": "Ce login existe déjà"}, 400)
@@ -196,9 +220,11 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
                     self.send_json({"success": False, "message": "Cet email est déjà utilisé"}, 400)
                     return
             
+            # Générer un ID utilisateur et un mot de passe temporaire
             user_id = hashlib.sha256(f"{login}{datetime.now().isoformat()}".encode()).hexdigest()[:16]
             temp_password = secrets.token_urlsafe(12)
             
+            # Créer l'utilisateur
             users[user_id] = {
                 "login": login,
                 "nom": nom,
@@ -209,9 +235,11 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
                 "created_at": datetime.now().isoformat()
             }
             
+            # Sauvegarder les utilisateurs
             with open(USERS_FILE, 'w', encoding='utf-8') as f:
                 json.dump(users, f, ensure_ascii=False, indent=2)
             
+            # Envoyer l'email avec le mot de passe temporaire
             self.send_registration_email(email, login, temp_password, prenom)
             
             self.send_json({
@@ -224,6 +252,7 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
     def send_registration_email(self, email, login, password, prenom):
         """Envoyer un email avec le mot de passe temporaire"""
         try:
+            # Pour faciliter, on va juste logger pour maintenant
             print(f"\n📧 [EMAIL] Envoi à {email}")
             print(f"   Login: {login}")
             print(f"   Mot de passe temporaire: {password}")
@@ -264,16 +293,19 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json({"success": False, "message": "Ancien et nouveau mot de passe requis"}, 400)
                 return
             
+            # Charger l'utilisateur
             with open(USERS_FILE, 'r', encoding='utf-8') as f:
                 users = json.load(f)
             
             user_data = users[user['id']]
             
+            # Vérifier l'ancien mot de passe
             old_hashed = hashlib.sha256(old_password.encode()).hexdigest()
             if old_hashed != user_data['password_hash']:
                 self.send_json({"success": False, "message": "Ancien mot de passe incorrect"}, 401)
                 return
             
+            # Mettre à jour le mot de passe
             user_data['password_hash'] = hashlib.sha256(new_password.encode()).hexdigest()
             
             with open(USERS_FILE, 'w', encoding='utf-8') as f:
@@ -298,6 +330,7 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
             with open(BOOKS_FILE, 'r', encoding='utf-8') as f:
                 books_config = json.load(f)
             
+            # Enrichir avec les infos de progression pour cet utilisateur
             for book in books_config['books']:
                 book_id = book['id']
                 status = self.get_book_completion_status(user['id'], book_id)
@@ -306,6 +339,7 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
                 book['is_completed'] = status['is_completed']
                 book['in_progress'] = status['in_progress']
             
+            # Trier : en cours d'abord, puis terminés
             books_config['books'].sort(key=lambda x: (x['is_completed'], -x['completed_chapters']))
             
             self.send_json(books_config)
@@ -315,6 +349,7 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
     def send_quiz_data(self, book_id):
         """Envoie les données du quiz pour un livre"""
         try:
+            # Charger la config du livre
             with open(BOOKS_FILE, 'r', encoding='utf-8') as f:
                 books_config = json.load(f)
             
@@ -328,10 +363,14 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_error(404, "Livre non trouvé")
                 return
             
+            # Charger le fichier quiz
             quiz_file = book['quizFile']
+            
+            # Résoudre le chemin de manière sécurisée
             base_dir = os.path.dirname(os.path.abspath(__file__))
             quiz_path = os.path.join(base_dir, quiz_file)
             
+            # Vérifier que le chemin reste dans le répertoire de base
             quiz_path = os.path.abspath(quiz_path)
             if not quiz_path.startswith(base_dir):
                 self.send_error(403, "Accès refusé")
@@ -414,6 +453,7 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json({"success": False, "message": "Utilisateur non trouvé"}, 404)
                 return
             
+            # Générer un nouveau mot de passe
             new_password = secrets.token_urlsafe(12)
             users[user_id]['password_hash'] = hashlib.sha256(new_password.encode()).hexdigest()
             
@@ -431,6 +471,7 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
     def get_user_results(self):
         """Obtenir les résultats d'un utilisateur (admin)"""
         try:
+            # Récupérer l'ID utilisateur depuis les paramètres
             query = urllib.parse.urlparse(self.path).query
             params = urllib.parse.parse_qs(query)
             user_id = params.get('user_id', [''])[0]
@@ -445,6 +486,7 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
             
             if user_id in all_results:
                 if book_id:
+                    # Filtrer par livre
                     book_results = {}
                     for chapter, result in all_results[user_id].items():
                         if chapter.startswith(book_id):
@@ -464,23 +506,28 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
         except:
             score_int = 0
         
+        # Charger ou créer le fichier de résultats
         if os.path.exists(RESULTS_FILE):
             with open(RESULTS_FILE, 'r', encoding='utf-8') as f:
                 results = json.load(f)
         else:
             results = {}
         
+        # Initialiser l'utilisateur s'il n'existe pas
         if user_id not in results:
             results[user_id] = {}
         
+        # Initialiser le livre s'il n'existe pas
         if book_id not in results[user_id]:
             results[user_id][book_id] = {}
         
+        # Enregistrer le résultat (écrase l'ancien)
         results[user_id][book_id][chapter_title] = {
             "score": score_int,
             "timestamp": datetime.now().isoformat()
         }
         
+        # Sauvegarder
         with open(RESULTS_FILE, 'w', encoding='utf-8') as f:
             json.dump(results, f, ensure_ascii=False, indent=2)
         
@@ -499,6 +546,7 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
                     if result['score'] > 3:
                         completed_chapters.append(chapter_title)
         
+        # Charger le nombre total de chapitres
         total_chapters = 0
         try:
             with open(BOOKS_FILE, 'r', encoding='utf-8') as f:

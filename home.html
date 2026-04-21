@@ -249,11 +249,84 @@
             color: var(--parchment);
             font-size: 1.2em;
         }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .navbar-title {
+            color: #8b0000;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .navbar-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .user-info {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .navbar-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .navbar-link:hover {
+            color: #764ba2;
+        }
+
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #ee5a52;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div class="navbar">
+        <div class="navbar-left">
+            <div class="navbar-title">📚 Quiz Littéraire</div>
+        </div>
+        <div class="navbar-right">
+            <div class="user-info" id="user-name"></div>
+            <a href="/settings.html" class="navbar-link">⚙️ Paramètres</a>
+            <button class="logout-btn" onclick="logout()">Déconnexion</button>
+        </div>
+    </div>
+
     <div class="header">
         <h1>📚 Bibliothèque de Quiz</h1>
         <p>Explorez des histoires captivantes à travers des quiz interactifs</p>
@@ -265,9 +338,19 @@
 </div>
 
 <script>
+    let currentUser = null;
+
     async function loadBooks() {
         try {
             const response = await fetch('/api/books');
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                throw new Error('Erreur lors du chargement');
+            }
+            
             const data = await response.json();
             
             const inProgressBooks = data.books.filter(b => b.in_progress && !b.is_completed);
@@ -334,9 +417,31 @@
     function openQuiz(bookId) {
         window.location.href = `/quiz.html?book=${bookId}`;
     }
+
+    async function logout() {
+        try {
+            await fetch('/api/logout');
+            window.location.href = '/login.html';
+        } catch (error) {
+            window.location.href = '/login.html';
+        }
+    }
     
-    // Charger les livres au démarrage
-    window.addEventListener('load', loadBooks);
+    // Charger les infos utilisateur et les livres au démarrage
+    window.addEventListener('load', async () => {
+        try {
+            const response = await fetch('/api/user');
+            if (response.ok) {
+                currentUser = await response.json();
+                document.getElementById('user-name').textContent = `👤 ${currentUser.prenom} ${currentUser.nom}`;
+                loadBooks();
+            } else {
+                window.location.href = '/login.html';
+            }
+        } catch (error) {
+            window.location.href = '/login.html';
+        }
+    });
 </script>
 
 </body>

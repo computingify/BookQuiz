@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Quiz Littéraire</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+
+        .navbar h1 {
+            color: #667eea;
+            font-size: 24px;
+        }
+
+        .navbar-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .user-info {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #ee5a52;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid transparent;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: #667eea;
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-content h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            color: #666;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .action-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+            transition: background 0.3s;
+        }
+
+        .action-btn:hover {
+            background: #5568d3;
+        }
+
+        .action-btn.danger {
+            background: #ff6b6b;
+        }
+
+        .action-btn.danger:hover {
+            background: #ee5a52;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content h3 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .modal-btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .modal-btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .modal-btn-secondary {
+            background: #ddd;
+            color: #333;
+        }
+
+        .modal-btn-secondary:hover {
+            background: #ccc;
+        }
+
+        .admin-badge {
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .user-badge {
+            background: #ddd;
+            color: #333;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .search-bar button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .search-bar button:hover {
+            background: #5568d3;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+
+        .results-section {
+            margin-top: 20px;
+        }
+
+        .result-item {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-item span {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .score-badge {
+            background: #667eea;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .score-badge.low {
+            background: #ff6b6b;
+        }
+
+        .score-badge.medium {
+            background: #ffa500;
+        }
+
+        .score-badge.high {
+            background: #4caf50;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .message.success {
+            background: #efe;
+            color: #3c3;
+            display: block;
+        }
+
+        .message.error {
+            background: #fee;
+            color: #c33;
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🔐 Administration</h1>
+        <div class="navbar-right">
+            <div class="user-info">
+                <span id="admin-name">Admin</span>
+            </div>
+            <button class="logout-btn" onclick="logout()">Déconnexion</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('users')">👥 Utilisateurs</button>
+            <button class="tab-btn" onclick="switchTab('results')">📊 Résultats</button>
+        </div>
+
+        <!-- Onglet Utilisateurs -->
+        <div id="users" class="tab-content active">
+            <h2>Gestion des utilisateurs</h2>
+            <div id="users-message" class="message"></div>
+            <div class="search-bar">
+                <input type="text" id="search-user" placeholder="Rechercher un utilisateur...">
+                <button onclick="searchUsers()">Rechercher</button>
+            </div>
+            <div id="users-list-container">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Chargement...
+                </div>
+            </div>
+        </div>
+
+        <!-- Onglet Résultats -->
+        <div id="results" class="tab-content">
+            <h2>Résultats des utilisateurs</h2>
+            <div id="results-message" class="message"></div>
+            <div class="search-bar">
+                <select id="results-user-select">
+                    <option value="">Sélectionner un utilisateur...</option>
+                </select>
+                <select id="results-book-select">
+                    <option value="">Tous les livres</option>
+                </select>
+            </div>
+            <div id="results-container">
+                <div class="no-results">Sélectionnez un utilisateur pour voir ses résultats</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour réinitialiser le mot de passe -->
+    <div id="reset-password-modal" class="modal">
+        <div class="modal-content">
+            <h3>Réinitialiser le mot de passe</h3>
+            <div id="reset-message" class="message"></div>
+            <div class="form-group">
+                <label>Utilisateur:</label>
+                <input type="text" id="reset-user-name" disabled>
+            </div>
+            <div class="form-group">
+                <label>Nouveau mot de passe temporaire:</label>
+                <input type="text" id="reset-new-password" readonly>
+                <small style="color: #999;">Ce mot de passe a été généré automatiquement</small>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal('reset-password-modal')">Fermer</button>
+                <button class="modal-btn modal-btn-primary" onclick="copyPassword()">Copier le mot de passe</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour changer le rôle -->
+    <div id="change-role-modal" class="modal">
+        <div class="modal-content">
+            <h3>Modifier le rôle</h3>
+            <div id="role-message" class="message"></div>
+            <div class="form-group">
+                <label>Utilisateur:</label>
+                <input type="text" id="role-user-name" disabled>
+            </div>
+            <div class="form-group">
+                <label>Rôle:</label>
+                <select id="role-select">
+                    <option value="user">Utilisateur</option>
+                    <option value="admin">Administrateur</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal('change-role-modal')">Annuler</button>
+                <button class="modal-btn modal-btn-primary" onclick="changeUserRole()">Valider</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let allUsers = [];
+        let allBooks = [];
+        let currentEditingUserId = null;
+
+        // Charger les infos de l'utilisateur connecté
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch('/api/user');
+                if (response.ok) {
+                    currentUser = await response.json();
+                    if (!currentUser.is_admin) {
+                        window.location.href = '/login.html';
+                    }
+                    document.getElementById('admin-name').textContent = currentUser.prenom;
+                    loadUsers();
+                    loadBooksForResults();
+                } else {
+                    window.location.href = '/login.html';
+                }
+            } catch (error) {
+                window.location.href = '/login.html';
+            }
+        });
+
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/admin/users');
+                if (response.ok) {
+                    allUsers = await response.json();
+                    displayUsers(allUsers);
+                    updateUsersSelect();
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des utilisateurs', error);
+            }
+        }
+
+        function displayUsers(users) {
+            const container = document.getElementById('users-list-container');
+            
+            if (users.length === 0) {
+                container.innerHTML = '<div class="no-results">Aucun utilisateur trouvé</div>';
+                return;
+            }
+            
+            let html = '<table><thead><tr><th>Login</th><th>Prénom</th><th>Nom</th><th>Email</th><th>Rôle</th><th>Inscrit le</th><th>Actions</th></tr></thead><tbody>';
+            
+            users.forEach(user => {
+                const created = new Date(user.created_at).toLocaleDateString('fr-FR');
+                const roleDisplay = user.is_admin ? 
+                    '<span class="admin-badge">Admin</span>' : 
+                    '<span class="user-badge">Utilisateur</span>';
+                
+                html += `
+                    <tr>
+                        <td><strong>${user.login}</strong></td>
+                        <td>${user.prenom}</td>
+                        <td>${user.nom}</td>
+                        <td>${user.email}</td>
+                        <td>${roleDisplay}</td>
+                        <td>${created}</td>
+                        <td>
+                            <button class="action-btn" onclick="openResetPasswordModal('${user.id}', '${user.prenom} ${user.nom}')">🔑 Reset</button>
+                            <button class="action-btn" onclick="openChangeRoleModal('${user.id}', '${user.prenom} ${user.nom}', ${user.is_admin})">⚙️ Rôle</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function searchUsers() {
+            const query = document.getElementById('search-user').value.toLowerCase();
+            const filtered = allUsers.filter(user => 
+                user.login.toLowerCase().includes(query) ||
+                user.prenom.toLowerCase().includes(query) ||
+                user.nom.toLowerCase().includes(query) ||
+                user.email.toLowerCase().includes(query)
+            );
+            displayUsers(filtered);
+        }
+
+        async function loadBooksForResults() {
+            try {
+                const response = await fetch('/api/books');
+                if (response.ok) {
+                    const data = await response.json();
+                    allBooks = data.books || [];
+                    updateBooksSelect();
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des livres', error);
+            }
+        }
+
+        function updateUsersSelect() {
+            const select = document.getElementById('results-user-select');
+            select.innerHTML = '<option value="">Sélectionner un utilisateur...</option>';
+            allUsers.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.id;
+                option.textContent = `${user.prenom} ${user.nom} (${user.login})`;
+                select.appendChild(option);
+            });
+        }
+
+        function updateBooksSelect() {
+            const select = document.getElementById('results-book-select');
+            allBooks.forEach(book => {
+                const option = document.createElement('option');
+                option.value = book.id;
+                option.textContent = book.title;
+                select.appendChild(option);
+            });
+        }
+
+        document.getElementById('results-user-select').addEventListener('change', loadUserResults);
+        document.getElementById('results-book-select').addEventListener('change', loadUserResults);
+
+        async function loadUserResults() {
+            const userId = document.getElementById('results-user-select').value;
+            const bookId = document.getElementById('results-book-select').value;
+            const container = document.getElementById('results-container');
+            
+            if (!userId) {
+                container.innerHTML = '<div class="no-results">Sélectionnez un utilisateur pour voir ses résultats</div>';
+                return;
+            }
+            
+            try {
+                let url = `/api/admin/results?user_id=${userId}`;
+                if (bookId) {
+                    url += `&book_id=${bookId}`;
+                }
+                
+                const response = await fetch(url);
+                if (response.ok) {
+                    const results = await response.json();
+                    displayResults(results);
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des résultats', error);
+            }
+        }
+
+        function displayResults(results) {
+            const container = document.getElementById('results-container');
+            
+            if (Object.keys(results).length === 0) {
+                container.innerHTML = '<div class="no-results">Aucun résultat pour cet utilisateur</div>';
+                return;
+            }
+            
+            let html = '';
+            
+            // Regrouper par livre
+            const groupedByBook = {};
+            Object.entries(results).forEach(([key, value]) => {
+                const parts = key.split('|');
+                const bookId = parts[0];
+                const chapter = parts[1] || key;
+                
+                if (!groupedByBook[bookId]) {
+                    groupedByBook[bookId] = [];
+                }
+                groupedByBook[bookId].push({
+                    chapter: chapter,
+                    score: value.score || value.score || 0,
+                    timestamp: value.timestamp || ''
+                });
+            });
+            
+            Object.entries(groupedByBook).forEach(([bookId, chapters]) => {
+                const book = allBooks.find(b => b.id === bookId);
+                const bookTitle = book ? book.title : bookId;
+                
+                html += `<div class="results-section"><h3>${bookTitle}</h3>`;
+                
+                chapters.forEach(chapter => {
+                    const scoreClass = chapter.score <= 2 ? 'low' : chapter.score <= 3 ? 'medium' : 'high';
+                    html += `
+                        <div class="result-item">
+                            <span>${chapter.chapter}</span>
+                            <span class="score-badge ${scoreClass}">${chapter.score}/5</span>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function openResetPasswordModal(userId, userName) {
+            currentEditingUserId = userId;
+            document.getElementById('reset-user-name').value = userName;
+            document.getElementById('reset-new-password').value = '';
+            document.getElementById('reset-message').style.display = 'none';
+            
+            // Appeler l'API pour réinitialiser
+            resetPassword(userId);
+            document.getElementById('reset-password-modal').classList.add('active');
+        }
+
+        async function resetPassword(userId) {
+            try {
+                const response = await fetch('/api/admin/reset-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user_id: userId })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('reset-new-password').value = data.new_password;
+                    const msgDiv = document.getElementById('reset-message');
+                    msgDiv.textContent = data.message;
+                    msgDiv.className = 'message success';
+                } else {
+                    const data = await response.json();
+                    const msgDiv = document.getElementById('reset-message');
+                    msgDiv.textContent = data.message || 'Erreur';
+                    msgDiv.className = 'message error';
+                }
+            } catch (error) {
+                console.error('Erreur', error);
+            }
+        }
+
+        function copyPassword() {
+            const input = document.getElementById('reset-new-password');
+            input.select();
+            document.execCommand('copy');
+            alert('Mot de passe copié !');
+        }
+
+        function openChangeRoleModal(userId, userName, isAdmin) {
+            currentEditingUserId = userId;
+            document.getElementById('role-user-name').value = userName;
+            document.getElementById('role-select').value = isAdmin ? 'admin' : 'user';
+            document.getElementById('role-message').style.display = 'none';
+            document.getElementById('change-role-modal').classList.add('active');
+        }
+
+        async function changeUserRole() {
+            const newRole = document.getElementById('role-select').value;
+            const isAdmin = newRole === 'admin';
+            
+            // À implémenter côté serveur
+            const msgDiv = document.getElementById('role-message');
+            msgDiv.textContent = 'Fonctionnalité en cours de développement';
+            msgDiv.className = 'message error';
+        }
+
+        function switchTab(tabName) {
+            // Masquer tous les onglets
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Afficher l'onglet sélectionné
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        async function logout() {
+            try {
+                await fetch('/api/logout');
+                window.location.href = '/login.html';
+            } catch (error) {
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Fermer les modales en cliquant sur le fond
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

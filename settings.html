@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres - Quiz Littéraire</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+
+        .navbar h1 {
+            color: #667eea;
+            font-size: 20px;
+        }
+
+        .navbar-right {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #764ba2;
+        }
+
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #ee5a52;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+
+        .container h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h3 {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        input[type="text"]:disabled,
+        input[type="email"]:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        button {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.cancel {
+            background: #ddd;
+            color: #333;
+            margin-right: 0;
+        }
+
+        button.cancel:hover {
+            background: #ccc;
+            box-shadow: none;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: #efe;
+            color: #3c3;
+            border: 1px solid #3c3;
+            display: block;
+        }
+
+        .message.error {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #c33;
+            display: block;
+        }
+
+        .user-info-item {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .user-info-label {
+            font-size: 12px;
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .user-info-value {
+            color: #333;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .container h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>⚙️ Paramètres</h1>
+        <div class="navbar-right">
+            <a href="/home.html" class="nav-link">📚 Quizzes</a>
+            <button class="logout-btn" onclick="logout()">Déconnexion</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Mes paramètres</h2>
+
+        <!-- Infos utilisateur -->
+        <div class="section">
+            <h3>Informations personnelles</h3>
+            <div id="user-info-container">
+                <div class="loading active">
+                    <div class="spinner"></div>
+                    Chargement...
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire de changement de mot de passe -->
+        <div class="section">
+            <h3>Changer le mot de passe</h3>
+            <div id="password-message" class="message"></div>
+            <div id="password-loading" class="loading">
+                <div class="spinner"></div>
+                Changement en cours...
+            </div>
+            <form id="change-password-form" style="display: block;">
+                <div class="form-group">
+                    <label for="old-password">Ancien mot de passe</label>
+                    <input type="password" id="old-password" placeholder="Entrez votre ancien mot de passe" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-password">Nouveau mot de passe</label>
+                    <input type="password" id="new-password" placeholder="Entrez votre nouveau mot de passe" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirmer le nouveau mot de passe</label>
+                    <input type="password" id="confirm-password" placeholder="Confirmer votre nouveau mot de passe" required>
+                </div>
+                <div class="button-group">
+                    <button type="submit">Changer le mot de passe</button>
+                    <button type="button" class="cancel" onclick="resetPasswordForm()">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Charger les infos utilisateur
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch('/api/user');
+                if (response.ok) {
+                    const user = await response.json();
+                    displayUserInfo(user);
+                } else {
+                    window.location.href = '/login.html';
+                }
+            } catch (error) {
+                window.location.href = '/login.html';
+            }
+        });
+
+        function displayUserInfo(user) {
+            const container = document.getElementById('user-info-container');
+            
+            let html = `
+                <div class="user-info-item">
+                    <div class="user-info-label">Login</div>
+                    <div class="user-info-value">${user.login}</div>
+                </div>
+                <div class="user-info-item">
+                    <div class="user-info-label">Prénom</div>
+                    <div class="user-info-value">${user.prenom}</div>
+                </div>
+                <div class="user-info-item">
+                    <div class="user-info-label">Nom</div>
+                    <div class="user-info-value">${user.nom}</div>
+                </div>
+                <div class="user-info-item">
+                    <div class="user-info-label">Email</div>
+                    <div class="user-info-value">${user.email}</div>
+                </div>
+            `;
+            
+            if (user.is_admin) {
+                html += `
+                    <div class="user-info-item">
+                        <div class="user-info-label">Rôle</div>
+                        <div class="user-info-value" style="color: #667eea;">👤 Administrateur</div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Gestion du formulaire de changement de mot de passe
+        document.getElementById('change-password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const oldPassword = document.getElementById('old-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            const messageDiv = document.getElementById('password-message');
+            const loadingDiv = document.getElementById('password-loading');
+            
+            // Vérifier les mots de passe
+            if (newPassword !== confirmPassword) {
+                messageDiv.textContent = 'Les nouveaux mots de passe ne correspondent pas';
+                messageDiv.className = 'message error';
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                messageDiv.textContent = 'Le nouveau mot de passe doit contenir au moins 6 caractères';
+                messageDiv.className = 'message error';
+                return;
+            }
+            
+            messageDiv.style.display = 'none';
+            loadingDiv.classList.add('active');
+            
+            try {
+                const response = await fetch('/api/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        old_password: oldPassword,
+                        new_password: newPassword
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'message success';
+                    
+                    // Réinitialiser le formulaire
+                    document.getElementById('change-password-form').reset();
+                } else {
+                    messageDiv.textContent = data.message || 'Erreur lors du changement de mot de passe';
+                    messageDiv.className = 'message error';
+                }
+            } catch (error) {
+                messageDiv.textContent = 'Erreur de connexion au serveur';
+                messageDiv.className = 'message error';
+            } finally {
+                loadingDiv.classList.remove('active');
+                messageDiv.style.display = 'block';
+            }
+        });
+
+        function resetPasswordForm() {
+            document.getElementById('change-password-form').reset();
+            document.getElementById('password-message').style.display = 'none';
+        }
+
+        async function logout() {
+            try {
+                await fetch('/api/logout');
+                window.location.href = '/login.html';
+            } catch (error) {
+                window.location.href = '/login.html';
+            }
+        }
+    </script>
+</body>
+</html>

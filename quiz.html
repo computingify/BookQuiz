@@ -81,15 +81,64 @@
             padding: 20px 0; 
             border-radius: 10px; 
             margin-bottom: 25px; 
-            text-align: center; 
             border: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
-        
+
+        .nav-box-left {
+            flex: 1;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            min-width: 300px;
+        }
+
+        .nav-box-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
         .nav-box label {
             color: white;
             font-weight: 600;
-            font-size: 1.05em;
+            font-size: 0.95em;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            margin: 0;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--gold);
+        }
+
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #ee5a52;
         }
         
         .nav-box br {
@@ -341,11 +390,16 @@
     <h1 id="book-title">Quiz</h1>
     
     <div class="nav-box">
-        <label><b>Choisissez un chapitre :</b></label><br><br>
-        <select id="chapSelect" onchange="switchChapter()">
-            <option value="">Chargement...</option>
-        </select>
-        <button class="btn-home" onclick="goHome()">🏠 Accueil</button>
+        <div class="nav-box-left">
+            <label><b>Choisissez un chapitre :</b></label>
+            <select id="chapSelect" onchange="switchChapter()">
+                <option value="">Chargement...</option>
+            </select>
+        </div>
+        <div class="nav-box-right">
+            <a href="/settings.html" class="nav-link">⚙️ Paramètres</a>
+            <button class="logout-btn" onclick="logout()">Déconnexion</button>
+        </div>
     </div>
 
     <div id="loading" class="loading">Chargement du quiz...</div>
@@ -366,6 +420,7 @@
     let quizData = null;
     let currentBookId = null;
     let currentChap = 1;
+    let currentUser = null;
     
     function getBookIdFromUrl() {
         const params = new URLSearchParams(window.location.search);
@@ -375,6 +430,15 @@
     function goHome() {
         window.location.href = '/home.html';
     }
+
+    async function logout() {
+        try {
+            await fetch('/api/logout');
+            window.location.href = '/login.html';
+        } catch (error) {
+            window.location.href = '/login.html';
+        }
+    }
     
     async function loadQuizData() {
         currentBookId = getBookIdFromUrl();
@@ -382,7 +446,7 @@
         
         if (!currentBookId) {
             errorDiv.textContent = 'Aucun livre sélectionné';
-            errorDiv.style.display = 'block'; // Afficher s'il y a une erreur
+            errorDiv.style.display = 'block';
             document.getElementById('loading').style.display = 'none';
             return;
         }
@@ -390,6 +454,13 @@
         try {
             // Charger les données du livre pour obtenir la couverture
             const booksResponse = await fetch('/api/books');
+            if (!booksResponse.ok) {
+                if (booksResponse.status === 401) {
+                    window.location.href = '/login.html';
+                }
+                throw new Error('Erreur lors du chargement des livres');
+            }
+            
             const booksData = await booksResponse.json();
             const book = booksData.books.find(b => b.id === currentBookId);
             
@@ -410,7 +481,7 @@
         } catch (error) {
             console.error('Erreur:', error);
             errorDiv.textContent = 'Erreur lors du chargement du quiz: ' + error.message;
-            errorDiv.style.display = 'block'; // Afficher s'il y a une erreur
+            errorDiv.style.display = 'block';
             document.getElementById('loading').style.display = 'none';
         }
     }
@@ -545,9 +616,19 @@
         }
     }
 
-    // Lancement au démarrage
-    window.onload = () => {
-        loadQuizData();
+    // Lancement au démarrage - Vérifier l'authentification d'abord
+    window.onload = async () => {
+        try {
+            const response = await fetch('/api/user');
+            if (response.ok) {
+                currentUser = await response.json();
+                loadQuizData();
+            } else {
+                window.location.href = '/login.html';
+            }
+        } catch (error) {
+            window.location.href = '/login.html';
+        }
     };
 </script>
 
