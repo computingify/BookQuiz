@@ -56,9 +56,8 @@ jobs:
       - name: Start service with PM2
         run: |
           # On lance le script python avec PM2
-          # Remplace 'main.py' par le nom réel de ton fichier python
           cd $HOME/bookquiz/current
-          pm2 start main.py --name bookquiz --interpreter python3
+          pm2 start server.py --name bookquiz --interpreter python3
           pm2 save
 
       - name: Check service status
