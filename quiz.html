@@ -429,7 +429,7 @@
         select.value = 1;
     }
     
-    async function updateMenuStatus() {
+    async function updateMenuStatus(autoLoadQuiz = true) {
         try {
             const response = await fetch(`/api/status/${currentBookId}`);
             const status = await response.json();
@@ -453,8 +453,8 @@
                 }
             }
             
-            // Ouvrir le premier chapitre non complété
-            if (firstUncompletedChapter) {
+            // Ouvrir le premier chapitre non complété (sauf si appelé depuis calculateResults)
+            if (autoLoadQuiz && firstUncompletedChapter) {
                 select.value = firstUncompletedChapter;
                 renderQuiz(firstUncompletedChapter);
             }
@@ -534,8 +534,8 @@
             body: formData
         });
 
-        // Mise à jour du statut
-        updateMenuStatus();
+        // Mise à jour du menu sans charger un nouveau quiz
+        updateMenuStatus(false);
     }
 
     function switchChapter() {
