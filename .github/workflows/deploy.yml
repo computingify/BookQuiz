@@ -1,0 +1,70 @@
+name: Deploy BookQuiz to Raspberry Pi
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Prepare Deployment Directory
+        run: |
+          DEPLOY_DIR="$HOME/bookquiz"
+          mkdir -p "$DEPLOY_DIR/shared/books_data"
+          mkdir -p "$DEPLOY_DIR/current"
+          
+          # Initialisation des fichiers de données s'ils n'existent pas
+          # Cela évite que le script Python plante au premier lancement
+          [ -f "$DEPLOY_DIR/shared/results.json" ] || echo "{}" > "$DEPLOY_DIR/shared/results.json"
+          [ -f "$DEPLOY_DIR/shared/sessions.json" ] || echo "{}" > "$DEPLOY_DIR/shared/sessions.json"
+          [ -f "$DEPLOY_DIR/shared/books_data/users.json" ] || echo "{}" > "$DEPLOY_DIR/shared/books_data/users.json"
+
+      - name: Stop existing service
+        run: |
+          pm2 stop bookquiz 2>/dev/null || true
+          pm2 delete bookquiz 2>/dev/null || true
+
+      - name: Deploy files
+        run: |
+          DEPLOY_DIR="$HOME/bookquiz"
+          
+          # 1. Backup de l'ancienne version
+          if [ -d "$DEPLOY_DIR/current" ]; then
+            mv "$DEPLOY_DIR/current" "$DEPLOY_DIR/backup-$(date +%Y%m%d-%H%M%S)"
+          fi
+          
+          # 2. Création du nouveau dossier current et copie du code
+          mkdir -p "$DEPLOY_DIR/current"
+          cp -r ./* "$DEPLOY_DIR/current/"
+          
+          # 3. GESTION DE LA PERSISTENCE (Lien symbolique)
+          # On supprime les fichiers vides/par défaut du repo pour les remplacer par ceux de la Pi
+          rm -f "$DEPLOY_DIR/current/results.json"
+          rm -f "$DEPLOY_DIR/current/sessions.json"
+          rm -rf "$DEPLOY_DIR/current/books_data/users.json"
+          
+          ln -s "$DEPLOY_DIR/shared/results.json" "$DEPLOY_DIR/current/results.json"
+          ln -s "$DEPLOY_DIR/shared/sessions.json" "$DEPLOY_DIR/current/sessions.json"
+          ln -s "$DEPLOY_DIR/shared/books_data/users.json" "$DEPLOY_DIR/current/books_data/users.json"
+
+      - name: Start service with PM2
+        run: |
+          # On lance le script python avec PM2
+          # Remplace 'main.py' par le nom réel de ton fichier python
+          cd $HOME/bookquiz/current
+          pm2 start main.py --name bookquiz --interpreter python3
+          pm2 save
+
+      - name: Check service status
+        if: success()
+        run: |
+          echo "===== Status BookQuiz ====="
+          pm2 status bookquiz
+          echo "===== Derniers Logs ====="
+          pm2 logs bookquiz --lines 15 --nostream
