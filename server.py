@@ -97,7 +97,9 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
             with open(USERS_FILE, 'r', encoding='utf-8') as f:
                 users = json.load(f)
                 if user_id in users:
-                    return users[user_id]
+                    user = users[user_id]
+                    user['id'] = user_id
+                    return user
         return None
 
     def handle_login(self):
