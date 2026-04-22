@@ -3,29 +3,55 @@ import socketserver
 import urllib.parse
 import json
 import os
+import sqlite3
 from datetime import datetime
 
-RESULTS_FILE = "results.json"
+# Configuration
+DB_FILE = "quiz_database.db"
 BOOKS_FILE = "books_data/books.json"
-PORT = 5000
+PORT = 5042
+
+def init_db():
+    """Initialise la base de données SQLite."""
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            book_id TEXT,
+            chapter_title TEXT,
+            score INTEGER,
+            timestamp DATETIME,
+            UNIQUE(username, book_id, chapter_title)
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
 class QuizHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
-        if self.path == '/':
+        parsed_url = urllib.parse.urlparse(self.path)
+        query_params = urllib.parse.parse_qs(parsed_url.query)
+        path = parsed_url.path
+
+        if path == '/':
             self.path = '/home.html'
-        elif self.path == '/api/books':
-            self.send_books_list()
-        elif self.path.startswith('/api/quiz/'):
-            book_id = self.path.split('/api/quiz/')[1]
+        elif path == '/api/books':
+            username = query_params.get('user', ['Guest'])[0]
+            self.send_books_list(username)
+            return
+        elif path.startswith('/api/quiz/'):
+            book_id = path.split('/api/quiz/')[1]
             self.send_quiz_data(book_id)
-        elif self.path.startswith('/api/status/'):
-            book_id = self.path.split('/api/status/')[1]
-            self.send_book_status(book_id)
-        else:
-            return http.server.SimpleHTTPRequestHandler.do_GET(self)
+            return
+        elif path.startswith('/api/status/'):
+            book_id = path.split('/api/status/')[1]
+            username = query_params.get('user', ['Guest'])[0]
+            self.send_book_status(book_id, username)
+            return
         
-        if self.path == '/home.html':
-            return http.server.SimpleHTTPRequestHandler.do_GET(self)
+        return http.server.SimpleHTTPRequestHandler.do_GET(self)
 
     def do_POST(self):
         if self.path == '/api/log-result':
@@ -33,164 +59,79 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
             post_data = self.rfile.read(content_length).decode('utf-8')
             params = urllib.parse.parse_qs(post_data)
             
+            user = params.get('username', ['Guest'])[0]
             book_id = params.get('book_id', ['unknown'])[0]
             chapitre = params.get('chapitre', ['?'])[0]
-            score = params.get('score', ['?'])[0]
+            score = params.get('score', ['0'])[0]
             
-            self.log_result(book_id, chapitre, score)
+            self.save_result(user, book_id, chapitre, score)
             
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps({"status": "ok"}).encode())
 
-    def send_books_list(self):
-        """Envoie la liste des livres avec leur statut"""
+    def save_result(self, user, book_id, chapter_title, score):
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        now = datetime.now().isoformat()
+        cursor.execute('''
+            INSERT OR REPLACE INTO results (username, book_id, chapter_title, score, timestamp)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (user, book_id, chapter_title, int(score), now))
+        conn.commit()
+        conn.close()
+        print(f"[SQL] Result saved: {user} | {book_id} | {score}/5")
+
+    def get_progression(self, book_id, username):
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        cursor.execute('SELECT chapter_title FROM results WHERE username = ? AND book_id = ? AND score > 3', (username, book_id))
+        completed = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        return completed
+
+    def send_books_list(self, username):
         try:
             with open(BOOKS_FILE, 'r', encoding='utf-8') as f:
-                books_config = json.load(f)
+                data = json.load(f)
             
-            # Enrichir avec les infos de progression
-            for book in books_config['books']:
-                book_id = book['id']
-                status = self.get_book_completion_status(book_id)
-                book['completed_chapters'] = status['completed_chapters']
-                book['total_chapters'] = status['total_chapters']
-                book['is_completed'] = status['is_completed']
-                book['in_progress'] = status['in_progress']
-            
-            # Trier : en cours d'abord, puis terminés
-            books_config['books'].sort(key=lambda x: (x['is_completed'], -x['completed_chapters']))
-            
+            for book in data['books']:
+                completed = self.get_progression(book['id'], username)
+                book['completed_chapters'] = len(completed)
+                book['total_chapters'] = book['chapters']
+                book['is_completed'] = len(completed) >= book['chapters']
+                book['in_progress'] = 0 < len(completed) < book['chapters']
+                book['completed_list'] = completed
+
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps(books_config).encode())
+            self.wfile.write(json.dumps(data).encode())
         except Exception as e:
             self.send_error(500, str(e))
 
     def send_quiz_data(self, book_id):
-        """Envoie les données du quiz pour un livre"""
-        try:
-            # Charger la config du livre
-            with open(BOOKS_FILE, 'r', encoding='utf-8') as f:
-                books_config = json.load(f)
-            
-            book = None
-            for b in books_config['books']:
-                if b['id'] == book_id:
-                    book = b
-                    break
-            
-            if not book:
-                self.send_error(404, "Livre non trouvé")
-                return
-            
-            # Charger le fichier quiz
-            quiz_file = book['quizFile']
-            
-            # Résoudre le chemin de manière sécurisée
-            base_dir = os.path.dirname(os.path.abspath(__file__))
-            quiz_path = os.path.join(base_dir, quiz_file)
-            
-            # Vérifier que le chemin reste dans le répertoire de base
-            quiz_path = os.path.abspath(quiz_path)
-            if not quiz_path.startswith(base_dir):
-                self.send_error(403, "Accès refusé")
-                return
-            
-            if not os.path.exists(quiz_path):
-                self.send_error(404, "Quiz non trouvé")
-                return
-            
-            with open(quiz_path, 'r', encoding='utf-8') as f:
-                quiz_data = json.load(f)
-            
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps(quiz_data).encode())
-        except Exception as e:
-            self.send_error(500, str(e))
+        with open(BOOKS_FILE, 'r', encoding='utf-8') as f:
+            books = json.load(f)['books']
+        book = next((b for b in books if b['id'] == book_id), None)
+        if book:
+            with open(book['quizFile'], 'r', encoding='utf-8') as f:
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(f.read().encode())
 
-    def send_book_status(self, book_id):
-        """Envoie le statut de complétion d'un livre"""
-        try:
-            status = self.get_book_completion_status(book_id)
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps(status).encode())
-        except Exception as e:
-            self.send_error(500, str(e))
+    def send_book_status(self, book_id, username):
+        completed = self.get_progression(book_id, username)
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps({"chapters": completed}).encode())
 
-    def log_result(self, book_id, chapter_title, score):
-        """Enregistre le résultat d'un quiz"""
-        try:
-            score_int = int(score)
-        except:
-            score_int = 0
-        
-        # Charger ou créer le fichier de résultats
-        if os.path.exists(RESULTS_FILE):
-            with open(RESULTS_FILE, 'r', encoding='utf-8') as f:
-                results = json.load(f)
-        else:
-            results = {}
-        
-        # Initialiser le livre s'il n'existe pas
-        if book_id not in results:
-            results[book_id] = {}
-        
-        # Enregistrer le résultat (écrase l'ancien)
-        results[book_id][chapter_title] = {
-            "score": score_int,
-            "timestamp": datetime.now().isoformat()
-        }
-        
-        # Sauvegarder
-        with open(RESULTS_FILE, 'w', encoding='utf-8') as f:
-            json.dump(results, f, ensure_ascii=False, indent=2)
-        
-        print(f"\n[RÉSULTAT] Livre: {book_id} | Chapitre: {chapter_title} | Score: {score_int}/5")
-
-    def get_book_completion_status(self, book_id):
-        """Retourne le statut de complétion d'un livre"""
-        completed_chapters = []
-        
-        if os.path.exists(RESULTS_FILE):
-            with open(RESULTS_FILE, 'r', encoding='utf-8') as f:
-                results = json.load(f)
-            
-            if book_id in results:
-                for chapter_title, result in results[book_id].items():
-                    if result['score'] > 3:
-                        completed_chapters.append(chapter_title)
-        
-        # Charger le nombre total de chapitres
-        total_chapters = 0
-        try:
-            with open(BOOKS_FILE, 'r', encoding='utf-8') as f:
-                books_config = json.load(f)
-            for book in books_config['books']:
-                if book['id'] == book_id:
-                    total_chapters = book['chapters']
-                    break
-        except:
-            pass
-        
-        is_completed = (len(completed_chapters) == total_chapters) and total_chapters > 0
-        in_progress = len(completed_chapters) > 0 and not is_completed
-        
-        return {
-            "completed_chapters": len(completed_chapters),
-            "total_chapters": total_chapters,
-            "is_completed": is_completed,
-            "in_progress": in_progress,
-            "chapters": completed_chapters
-        }
-
-print(f"Serveur lancé sur le port {PORT}")
-socketserver.TCPServer.allow_reuse_address = True
-with socketserver.TCPServer(("", PORT), QuizHandler) as httpd:
-    httpd.serve_forever()
+if __name__ == "__main__":
+    init_db()
+    print(f"Serveur lancé sur http://localhost:{PORT}")
+    socketserver.TCPServer.allow_reuse_address = True
+    with socketserver.TCPServer(("", PORT), QuizHandler) as httpd:
+        httpd.serve_forever()

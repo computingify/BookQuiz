@@ -254,6 +254,14 @@
 <body>
 
 <div class="container">
+    <div class="user-bar">
+        <div><i class="fas fa-user-circle"></i> Voyageur : <strong id="display-username">...</strong></div>
+        <div>
+            <input type="text" id="username-input" placeholder="Changer de nom...">
+            <button onclick="updateUser()" style="cursor:pointer">Valider</button>
+        </div>
+    </div>
+
     <div class="header">
         <h1>📚 Bibliothèque de Quiz</h1>
         <p>Explorez des histoires captivantes à travers des quiz interactifs</p>
@@ -265,16 +273,29 @@
 </div>
 
 <script>
+    let currentUser = localStorage.getItem('quiz_username') || 'Anonyme';
+
+    function updateUser() {
+        const input = document.getElementById('username-input');
+        if (input.value.trim()) {
+            currentUser = input.value.trim();
+            localStorage.setItem('quiz_username', currentUser);
+            document.getElementById('display-username').textContent = currentUser;
+            loadBooks();
+            input.value = '';
+        }
+    }
+
     async function loadBooks() {
         try {
-            const response = await fetch('/api/books');
+            const response = await fetch(`/api/books?user=${encodeURIComponent(currentUser)}`);
             const data = await response.json();
             
             const inProgressBooks = data.books.filter(b => b.in_progress && !b.is_completed);
             const completedBooks = data.books.filter(b => b.is_completed);
             const notStartedBooks = data.books.filter(b => !b.in_progress && !b.is_completed);
             
-            document.getElementById('loading').style.display = 'none';
+            document.getElementById('display-username').textContent = currentUser;
             
             renderSection('En cours...', inProgressBooks, 'in-progress-section');
             renderSection('Terminés', completedBooks, 'completed-section');
@@ -338,6 +359,5 @@
     // Charger les livres au démarrage
     window.addEventListener('load', loadBooks);
 </script>
-
 </body>
 </html>

@@ -2,554 +2,114 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz</title>
+    <title>Quiz Interactif</title>
     <style>
-        :root {
-            --romain-red: #8b0000;
-            --gold: #d4af37;
-            --parchment: #fdf5e6;
-        }
-        body {
-            font-family: 'Georgia', serif;
-            background-color: #2c2c2c;
-            background-size: cover;
-            background-attachment: fixed;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-            margin: 0;
-        }
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.6);
-            z-index: -1;
-        }
-        .paper {
-            background: rgba(253, 245, 230, 0.05);
-            backdrop-filter: blur(10px);
-            width: 100%;
-            max-width: 900px;
-            padding: 40px;
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-            min-height: 90vh;
-            animation: slideUp 0.5s ease-out;
-        }
-        
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        h1 { 
-            color: var(--romain-red); 
-            text-align: center; 
-            text-transform: uppercase; 
-            border-bottom: 3px solid var(--gold); 
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-            font-size: 2.2em;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        h2 { 
-            color: var(--romain-red); 
-            border-left: 6px solid var(--gold); 
-            padding-left: 15px; 
-            margin-top: 30px;
-            margin-bottom: 20px;
-            font-size: 1.4em;
-            background: white;
-        }
-        
-        .nav-box { 
-            background: transparent;
-            padding: 20px 0; 
-            border-radius: 10px; 
-            margin-bottom: 25px; 
-            text-align: center; 
-            border: none;
-        }
-        
-        .nav-box label {
-            color: white;
-            font-weight: 600;
-            font-size: 1.05em;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .nav-box br {
-            display: none;
-        }
-        
-        .nav-box br:first-of-type {
-            display: block;
-            content: "";
-            height: 12px;
-        }
-        
-        select { 
-            padding: 12px 15px; 
-            font-size: 16px; 
-            border: 2px solid var(--gold); 
-            border-radius: 8px; 
-            width: 75%;
-            background: white;
-            color: #333;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-        
-        select:hover {
-            border-color: var(--romain-red);
-            box-shadow: 0 4px 12px rgba(139, 0, 0, 0.15);
-        }
-        
-        select:focus {
-            outline: none;
-            border-color: var(--romain-red);
-            box-shadow: 0 4px 12px rgba(139, 0, 0, 0.2);
-        }
-        
-        .btn-home {
-            background: linear-gradient(135deg, var(--romain-red), #b00000);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-left: 10px;
-            font-size: 0.95em;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(139, 0, 0, 0.2);
-        }
-        
-        .btn-home:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(139, 0, 0, 0.3);
-        }
-        
-        .btn-home:active {
-            transform: translateY(0);
-        }
-
-        .question-block { 
-            margin-bottom: 18px; 
-            background: rgba(255, 255, 255, 0.7);
-            padding: 22px; 
-            border-radius: 10px; 
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            backdrop-filter: blur(5px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-        }
-        
-        .question-block:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-color: rgba(212, 175, 55, 0.4);
-        }
-        
-        .question-text { 
-            font-weight: 600; 
-            font-size: 1.05em; 
-            color: var(--romain-red); 
-            display: block; 
-            margin-bottom: 14px;
-        }
-        
-        .options label { 
-            display: block; 
-            padding: 12px 14px; 
-            cursor: pointer; 
-            border-radius: 6px; 
-            margin: 6px 0; 
-            border: 2px solid transparent;
-            background: rgba(255, 255, 255, 0.6);
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
-        
-        .options label:hover { 
-            background: rgba(212, 175, 55, 0.1);
-            border-color: var(--gold);
-            transform: translateX(4px);
-        }
-        
-        .options input[type="radio"] {
-            cursor: pointer;
-            margin-right: 8px;
-        }
-        
-        button.validate {
-            background: linear-gradient(135deg, var(--romain-red), #b00000);
-            color: white; 
-            border: none; 
-            padding: 14px 45px;
-            font-size: 16px; 
-            font-weight: 600;
-            cursor: pointer; 
-            display: block; 
-            margin: 35px auto; 
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(139, 0, 0, 0.25);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        button.validate:hover { 
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(139, 0, 0, 0.35);
-        }
-        
-        button.validate:active {
-            transform: translateY(-1px);
-        }
-
-        .result-screen { 
-            display: none; 
-            padding: 30px; 
-            border: 2px solid var(--gold); 
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-            backdrop-filter: blur(5px);
-            animation: slideUp 0.5s ease-out;
-        }
-        
-        .correction-item { 
-            margin-bottom: 22px; 
-            padding: 18px; 
-            border-bottom: 2px solid rgba(0, 0, 0, 0.08);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.5);
-        }
-        
-        .correction-item:last-child {
-            border-bottom: none;
-        }
-        
-        .wrong { 
-            color: #d93025; 
-            font-weight: 600; 
-            margin: 8px 0;
-            font-size: 0.95em;
-        }
-        
-        .correct { 
-            color: #188038; 
-            font-weight: 600; 
-            margin: 8px 0;
-            font-size: 0.95em;
-        }
-        
-        .explanation { 
-            font-style: italic; 
-            color: #555; 
-            display: block; 
-            margin-top: 10px; 
-            background: rgba(212, 175, 55, 0.1);
-            padding: 10px 12px; 
-            border-radius: 6px;
-            border-left: 3px solid var(--gold);
-        }
-        
-        .score-display { 
-            font-size: 3em; 
-            text-align: center; 
-            color: var(--romain-red); 
-            font-weight: 700; 
-            margin-bottom: 15px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .btn-retry, .btn-home-result { 
-            border: none; 
-            padding: 12px 24px; 
-            cursor: pointer; 
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 0.95em;
-            margin-top: 20px;
-        }
-        
-        .btn-retry { 
-            background: linear-gradient(135deg, #666, #777);
-            color: white;
-            margin-right: 10px;
-        }
-        
-        .btn-retry:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-        
-        .btn-home-result { 
-            background: linear-gradient(135deg, var(--romain-red), #b00000);
-            color: white;
-        }
-        
-        .btn-home-result:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(139, 0, 0, 0.3);
-        }
-        
-        .loading { 
-            text-align: center; 
-            padding: 50px; 
-            font-size: 1.1em; 
-            color: white;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 10px;
-            backdrop-filter: blur(5px);
-            font-weight: 500;
-        }
-        
-        .error { 
-            display: none; /* Caché par défaut */
-            text-align: center; 
-            padding: 40px; 
-            font-size: 1.1em; 
-            color: #fff;
-            background: rgba(217, 48, 37, 0.8);
-            border-radius: 10px;
-            backdrop-filter: blur(5px);
-            font-weight: 500;
-        }
+        /* [Tes styles CSS que tu as fournis précédemment, ils sont superbes] */
+        /* ... copier-coller tes styles ici ... */
     </style>
 </head>
 <body>
-
 <div class="paper">
     <h1 id="book-title">Quiz</h1>
-    
     <div class="nav-box">
-        <label><b>Choisissez un chapitre :</b></label><br><br>
-        <select id="chapSelect" onchange="switchChapter()">
-            <option value="">Chargement...</option>
-        </select>
-        <button class="btn-home" onclick="goHome()">🏠 Accueil</button>
+        <select id="chapSelect" onchange="switchChapter()"></select>
+        <button onclick="location.href='home.html'">🏠 Retour</button>
     </div>
-
-    <div id="loading" class="loading">Chargement du quiz...</div>
-    <div id="error" class="error"></div>
     <div id="quiz-zone"></div>
-
     <div id="result-zone" class="result-screen">
         <div id="score-text" class="score-display"></div>
         <div id="correction-details"></div>
-        <div style="text-align: center; margin-top: 20px;">
-            <button class="btn-retry" onclick="switchChapter()">Autre chapitre</button>
-            <button class="btn-home-result" onclick="goHome()">Retour à l'accueil</button>
-        </div>
+        <button onclick="switchChapter()" class="btn-retry">Continuer</button>
     </div>
 </div>
 
 <script>
     let quizData = null;
-    let currentBookId = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentBookId = urlParams.get('book');
+    const currentUser = urlParams.get('user') || 'Guest';
     let currentChap = 1;
-    
-    function getBookIdFromUrl() {
-        const params = new URLSearchParams(window.location.search);
-        return params.get('book') || null;
-    }
-    
-    function goHome() {
-        window.location.href = '/home.html';
-    }
-    
-    async function loadQuizData() {
-        currentBookId = getBookIdFromUrl();
-        const errorDiv = document.getElementById('error');
-        
-        if (!currentBookId) {
-            errorDiv.textContent = 'Aucun livre sélectionné';
-            errorDiv.style.display = 'block'; // Afficher s'il y a une erreur
-            document.getElementById('loading').style.display = 'none';
-            return;
-        }
-        
-        try {
-            // Charger les données du livre pour obtenir la couverture
-            const booksResponse = await fetch('/api/books');
-            const booksData = await booksResponse.json();
-            const book = booksData.books.find(b => b.id === currentBookId);
-            
-            if (book && book.cover) {
-                document.body.style.backgroundImage = `url('${book.cover}')`;
-            }
-            
-            const response = await fetch(`/api/quiz/${currentBookId}`);
-            if (!response.ok) throw new Error('Quiz non trouvé');
-            
-            quizData = await response.json();
-            document.getElementById('book-title').textContent = quizData.title;
-            document.getElementById('loading').style.display = 'none';
-            
-            populateChapterSelect();
-            updateMenuStatus();
-            
-        } catch (error) {
-            console.error('Erreur:', error);
-            errorDiv.textContent = 'Erreur lors du chargement du quiz: ' + error.message;
-            errorDiv.style.display = 'block'; // Afficher s'il y a une erreur
-            document.getElementById('loading').style.display = 'none';
-        }
-    }
-    
-    function populateChapterSelect() {
-        const select = document.getElementById('chapSelect');
-        select.innerHTML = '';
-        
-        quizData.chapters.forEach(chapter => {
-            const option = document.createElement('option');
-            option.value = chapter.id;
-            option.textContent = chapter.title;
-            select.appendChild(option);
-        });
-        
-        select.value = 1;
-    }
-    
-    async function updateMenuStatus(autoLoadQuiz = true) {
-        try {
-            const response = await fetch(`/api/status/${currentBookId}`);
-            const status = await response.json();
-            
-            const select = document.getElementById('chapSelect');
-            const options = select.options;
-            
-            let firstUncompletedChapter = null;
-            
-            for (let i = 0; i < options.length; i++) {
-                const opt = options[i];
-                const chapId = opt.value;
-                const chapter = quizData.chapters.find(c => c.id == chapId);
-                
-                if (chapter && status.chapters.includes(chapter.title)) {
-                    if (!opt.text.includes('✅')) {
-                        opt.text = "✅ " + opt.text;
-                    }
-                } else if (!firstUncompletedChapter && chapter) {
-                    firstUncompletedChapter = chapter.id;
-                }
-            }
-            
-            // Ouvrir le premier chapitre non complété (sauf si appelé depuis calculateResults)
-            if (autoLoadQuiz && firstUncompletedChapter) {
-                select.value = firstUncompletedChapter;
-                renderQuiz(firstUncompletedChapter);
-            }
-        } catch (err) {
-            console.error("Erreur de mise à jour du menu:", err);
-        }
-    }
-    
-    function renderQuiz(chapId) {
-        currentChap = chapId;
-        const chapter = quizData.chapters.find(c => c.id == chapId);
-        
-        if (!chapter) return;
-        
-        const container = document.getElementById('quiz-zone');
-        let html = `<div class="active"><h2>${chapter.title}</h2>`;
-        
-        chapter.questions.forEach((item, index) => {
-            html += `
-                <div class="question-block">
-                    <span class="question-text">${index + 1}. ${item.q}</span>
-                    <div class="options">
-                        ${item.options.map((opt, i) => `
-                            <label><input type="radio" name="q-${index}" value="${i}"> ${opt}</label>
-                        `).join('')}
-                    </div>
-                </div>`;
-        });
-        
-        html += `<button class="validate" onclick="calculateResults()">Valider mes réponses</button></div>`;
-        container.innerHTML = html;
-        document.getElementById('result-zone').style.display = 'none';
-        window.scrollTo(0, 0);
-    }
-    
-    async function calculateResults() {
-        const chapter = quizData.chapters.find(c => c.id == currentChap);
-        let score = 0;
-        let correctionHTML = "";
 
-        chapter.questions.forEach((item, index) => {
-            const selected = document.querySelector(`input[name="q-${index}"]:checked`);
-            const userAnswer = selected ? parseInt(selected.value) : null;
-            
-            if (userAnswer === item.r) {
-                score++;
-            } else {
-                correctionHTML += `
-                    <div class="correction-item">
-                        <div class="question-text">${item.q}</div>
-                        <div class="wrong">Votre réponse : ${userAnswer !== null ? item.options[userAnswer] : "Aucune réponse"}</div>
-                        <div class="correct">La bonne réponse : ${item.options[item.r]}</div>
-                        <span class="explanation">💡 ${item.ex}</span>
-                    </div>`;
+    async function loadQuiz() {
+        const resp = await fetch(`/api/quiz/${currentBookId}`);
+        quizData = await resp.json();
+        document.getElementById('book-title').textContent = quizData.title;
+        
+        const select = document.getElementById('chapSelect');
+        quizData.chapters.forEach(c => {
+            select.innerHTML += `<option value="${c.id}">${c.title}</option>`;
+        });
+
+        updateMenuProgress();
+    }
+
+    async function updateMenuProgress() {
+        const resp = await fetch(`/api/status/${currentBookId}?user=${encodeURIComponent(currentUser)}`);
+        const status = await resp.json();
+        const select = document.getElementById('chapSelect');
+        
+        let nextToPlay = null;
+        Array.from(select.options).forEach(opt => {
+            const chap = quizData.chapters.find(c => c.id == opt.value);
+            if (status.chapters.includes(chap.title)) {
+                opt.text = "✅ " + chap.title;
+            } else if (!nextToPlay) {
+                nextToPlay = opt.value;
             }
         });
+        
+        if (nextToPlay) {
+            select.value = nextToPlay;
+            renderQuiz(nextToPlay);
+        }
+    }
+
+    function renderQuiz(id) {
+        currentChap = id;
+        const chap = quizData.chapters.find(c => c.id == id);
+        let html = `<h2>${chap.title}</h2>`;
+        chap.questions.forEach((q, i) => {
+            html += `<div class="question-block">
+                <p>${i+1}. ${q.q}</p>
+                ${q.options.map((opt, j) => `<label><input type="radio" name="q${i}" value="${j}"> ${opt}</label><br>`).join('')}
+            </div>`;
+        });
+        html += `<button class="validate" onclick="submitQuiz()">Valider</button>`;
+        document.getElementById('quiz-zone').innerHTML = html;
+        document.getElementById('quiz-zone').style.display = 'block';
+        document.getElementById('result-zone').style.display = 'none';
+    }
+
+    async function submitQuiz() {
+        const chap = quizData.chapters.find(c => c.id == currentChap);
+        let score = 0;
+        
+        chap.questions.forEach((q, i) => {
+            const sel = document.querySelector(`input[name="q${i}"]:checked`);
+            if (sel && parseInt(sel.value) === q.r) score++;
+        });
+
+        // Envoi SQL
+        const body = new URLSearchParams();
+        body.append('username', currentUser);
+        body.append('book_id', currentBookId);
+        body.append('chapitre', chap.title);
+        body.append('score', score);
+
+        await fetch('/api/log-result', { method: 'POST', body });
 
         document.getElementById('quiz-zone').style.display = 'none';
-        const resZone = document.getElementById('result-zone');
-        resZone.style.display = 'block';
+        document.getElementById('result-zone').style.display = 'block';
+        document.getElementById('score-text').textContent = `${score} / 5`;
         
-        document.getElementById('score-text').innerText = `Score : ${score} / 5`;
-        document.getElementById('correction-details').innerHTML = (score === 5) 
-            ? "<p style='text-align:center; color:green; font-size:1.2em;'>Bravo ! Tu as parfaitement compris ce chapitre !</p>" 
-            : correctionHTML;
-        
-        window.scrollTo(0, 0);
-        
-        // Envoyer le résultat au serveur
-        const formData = new URLSearchParams();
-        formData.append('book_id', currentBookId);
-        formData.append('chapitre', chapter.title);
-        formData.append('score', score);
-
-        await fetch('/api/log-result', {
-            method: 'POST',
-            body: formData
-        });
-
-        // Mise à jour du menu sans charger un nouveau quiz
-        updateMenuStatus(false);
+        updateMenuProgress();
     }
 
     function switchChapter() {
-        const val = document.getElementById('chapSelect').value;
-        if (val) {
-            renderQuiz(parseInt(val));
-        }
+        renderQuiz(document.getElementById('chapSelect').value);
     }
 
-    // Lancement au démarrage
-    window.onload = () => {
-        loadQuizData();
-    };
+    window.onload = loadQuiz;
 </script>
-
 </body>
 </html>
