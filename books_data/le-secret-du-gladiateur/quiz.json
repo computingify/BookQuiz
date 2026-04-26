@@ -433,6 +433,114 @@
           "ex": "La ville est ensevelie pour des siècles."
         }
       ]
+    },
+    {
+      "id": 13,
+      "title": "Chapitre 13 : La pluie de cendres",
+      "questions": [
+        {
+          "q": "Quelle est la principale difficulté de Marcus et Niger pour s'enfuir ?",
+          "options": ["L'obscurité totale causée par les cendres", "Les soldats romains qui les poursuivent", "Une inondation soudaine"],
+          "r": 0,
+          "ex": "Les cendres et les pierres ponces obscurcissent le ciel, rendant la visibilité presque nulle en plein jour."
+        },
+        {
+          "q": "Comment Niger parvient-il à protéger Marcus pendant la fuite ?",
+          "options": ["En utilisant son bouclier de gladiateur", "En le portant sur ses épaules", "En trouvant un tunnel secret"],
+          "r": 1,
+          "ex": "Grâce à sa force physique de gladiateur, Niger aide Marcus à avancer malgré l'épuisement et le sol instable."
+        },
+        {
+          "q": "Que ressent Marcus en voyant la ville de Pompéi disparaître ?",
+          "options": ["De la joie car il détestait la ville", "Un immense chagrin et de l'incrédulité", "De l'indifférence"],
+          "r": 1,
+          "ex": "Il réalise que tout son monde, ses amis et sa maison sont ensevelis sous la fureur du volcan."
+        },
+        {
+          "q": "Niger profite-t-il de la panique pour s'enfuir seul ?",
+          "options": ["Oui, il disparaît dans la foule", "Il essaie mais Marcus le rattrape", "Non, il reste fidèle à Marcus jusqu'au bout"],
+          "r": 2,
+          "ex": "Niger prouve sa loyauté et son humanité en refusant d'abandonner le jeune garçon qui l'a aidé."
+        },
+        {
+          "q": "Où tentent-ils de se rendre pour trouver un navire ?",
+          "options": ["Vers le port de Stabies", "Vers le sommet du Vésuve", "Vers Rome à pied"],
+          "r": 0,
+          "ex": "Comme beaucoup de survivants, ils se dirigent vers la côte dans l'espoir qu'une flotte vienne les secourir."
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "title": "Chapitre 14 : Vers une terre d'asile",
+      "questions": [
+        {
+          "q": "Qui finit par recueillir Marcus et Niger sur son navire ?",
+          "options": ["Des pirates", "Des marchands grecs", "La flotte dirigée par Pline l'Ancien"],
+          "r": 2,
+          "ex": "Le célèbre savant et amiral Pline a lancé ses navires pour secourir les habitants de la baie."
+        },
+        {
+          "q": "Quelle est la condition physique de Niger après le sauvetage ?",
+          "options": ["Il est gravement brûlé", "Il est épuisé mais sain et sauf", "Il a perdu la vue"],
+          "r": 1,
+          "ex": "Malgré les épreuves, sa constitution solide lui a permis de survivre aux gaz et à la chaleur."
+        },
+        {
+          "q": "Quel geste Marcus fait-il pour prouver son amitié à Niger ?",
+          "options": ["Il lui donne tout son argent", "Il lui offre sa tunique", "Il jure de ne plus jamais le traiter comme un esclave"],
+          "r": 2,
+          "ex": "Marcus a compris que la dignité de Niger vaut bien plus que son statut social imposé par Rome."
+        },
+        {
+          "q": "Comment les autres survivants regardent-ils Niger sur le bateau ?",
+          "options": ["Comme un héros", "Avec peur car c'est un gladiateur", "Avec mépris"],
+          "r": 1,
+          "ex": "L'apparence de colosse de Niger intimide toujours, même dans le malheur commun."
+        },
+        {
+          "q": "Où Marcus et Niger débarquent-ils finalement ?",
+          "options": ["À Naples (Neapolis)", "En Sicile", "En Afrique"],
+          "r": 0,
+          "ex": "Naples est l'une des villes proches qui a accueilli les réfugiés de la catastrophe."
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "title": "Épilogue : Le souvenir de Pompéi",
+      "questions": [
+        {
+          "q": "Plusieurs années après, que devient Marcus ?",
+          "options": ["Un sénateur influent", "Un homme hanté par ses souvenirs mais reconnaissant", "Un soldat en Gaule"],
+          "r": 1,
+          "ex": "Marcus reste marqué par la tragédie, mais il a grandi avec les leçons de sagesse de Niger."
+        },
+        {
+          "q": "Qu'est-il arrivé à Niger après la catastrophe ?",
+          "options": ["Il a retrouvé sa liberté et est retourné vers ses racines", "Il est mort de maladie", "Il est redevenu gladiateur à Rome"],
+          "r": 0,
+          "ex": "Niger a enfin pu quitter sa condition de bête de foire pour vivre sa vie d'homme libre et cultivé."
+        },
+        {
+          "q": "Quel était finalement le 'Secret' de Niger que Marcus a protégé ?",
+          "options": ["Sa véritable identité d'homme libre et érudit", "L'emplacement d'un trésor", "Un complot contre l'Empereur"],
+          "r": 0,
+          "ex": "Le secret était que Niger était un homme de culture, bien loin de l'image de brute sauvage des arènes."
+        },
+        {
+          "q": "Marcus retourne-t-il sur les ruines de Pompéi ?",
+          "options": ["Oui, chaque année", "Non, car la ville est scellée sous la cendre", "Il essaie mais ne retrouve pas l'endroit"],
+          "r": 1,
+          "ex": "La ville a disparu de la surface de la terre, devenant un champ de cendres silencieux."
+        },
+        {
+          "q": "Quel sentiment prédomine à la fin du livre de Laure Bazire ?",
+          "options": ["La soif de vengeance", "La tristesse absolue", "L'espoir et la valeur de la liberté"],
+          "r": 2,
+          "ex": "Le roman se termine sur une note d'espoir : la survie de l'esprit et de l'amitié au-delà de la destruction."
+        }
+      ]
     }
   ]
 }

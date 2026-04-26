@@ -6,7 +6,7 @@
       "author": "Laure Bazire",
       "description": "Un roman historique palpitant sur Pompéi et la destruction du Vésuve. Suivez Marcus et Niger dans leur quête de liberté au cœur de la catastrophe.",
       "cover": "books_data/le-secret-du-gladiateur/le-secret-du-gladiateur-cover.jpg",
-      "chapters": 12,
+      "chapters": 15,
       "quizFile": "books_data/le-secret-du-gladiateur/quiz.json"
     }
   ]
