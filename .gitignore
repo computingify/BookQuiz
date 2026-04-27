@@ -1,2 +1,5 @@
 *.db
 *.pyc
+*.backup
+*.log
+__pycache__/**/*

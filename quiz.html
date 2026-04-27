@@ -438,6 +438,7 @@
             const options = select.options;
             
             let firstUncompletedChapter = null;
+            let lastCompletedChapter = null;
             
             for (let i = 0; i < options.length; i++) {
                 const opt = options[i];
@@ -448,15 +449,17 @@
                     if (!opt.text.includes('✅')) {
                         opt.text = "✅ " + opt.text;
                     }
+                    lastCompletedChapter = chapter.id;
                 } else if (!firstUncompletedChapter && chapter) {
                     firstUncompletedChapter = chapter.id;
                 }
             }
             
-            // Ouvrir le premier chapitre non complété (sauf si appelé depuis calculateResults)
-            if (autoLoadQuiz && firstUncompletedChapter) {
-                select.value = firstUncompletedChapter;
-                renderQuiz(firstUncompletedChapter);
+            // Ouvrir le premier chapitre non complété, ou le dernier chapitre complété si tous sont faits
+            if (autoLoadQuiz) {
+                const chapterToLoad = firstUncompletedChapter || lastCompletedChapter || 1;
+                select.value = chapterToLoad;
+                renderQuiz(chapterToLoad);
             }
         } catch (err) {
             console.error("Erreur de mise à jour du menu:", err);
