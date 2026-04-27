@@ -5,7 +5,8 @@ import json
 import os
 from datetime import datetime
 
-RESULTS_FILE = "results.json"
+import database
+
 BOOKS_FILE = "books_data/books.json"
 PORT = 5000
 
@@ -131,41 +132,15 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
         except:
             score_int = 0
         
-        # Charger ou créer le fichier de résultats
-        if os.path.exists(RESULTS_FILE):
-            with open(RESULTS_FILE, 'r', encoding='utf-8') as f:
-                results = json.load(f)
-        else:
-            results = {}
-        
-        # Initialiser le livre s'il n'existe pas
-        if book_id not in results:
-            results[book_id] = {}
-        
-        # Enregistrer le résultat (écrase l'ancien)
-        results[book_id][chapter_title] = {
-            "score": score_int,
-            "timestamp": datetime.now().isoformat()
-        }
-        
-        # Sauvegarder
-        with open(RESULTS_FILE, 'w', encoding='utf-8') as f:
-            json.dump(results, f, ensure_ascii=False, indent=2)
+        # Enregistrer dans SQLite
+        database.log_result(book_id, chapter_title, score_int)
         
         print(f"\n[RÉSULTAT] Livre: {book_id} | Chapitre: {chapter_title} | Score: {score_int}/5")
 
     def get_book_completion_status(self, book_id):
         """Retourne le statut de complétion d'un livre"""
-        completed_chapters = []
-        
-        if os.path.exists(RESULTS_FILE):
-            with open(RESULTS_FILE, 'r', encoding='utf-8') as f:
-                results = json.load(f)
-            
-            if book_id in results:
-                for chapter_title, result in results[book_id].items():
-                    if result['score'] > 3:
-                        completed_chapters.append(chapter_title)
+        # Récupérer les chapitres complétés depuis SQLite
+        completed_chapters = database.get_completed_chapters(book_id, min_score=4)
         
         # Charger le nombre total de chapitres
         total_chapters = 0
@@ -179,7 +154,7 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
         except:
             pass
         
-        is_completed = (len(completed_chapters) == total_chapters) and total_chapters > 0
+        is_completed = (len(completed_chapters) >= total_chapters) and total_chapters > 0
         in_progress = len(completed_chapters) > 0 and not is_completed
         
         return {
@@ -189,6 +164,10 @@ class QuizHandler(http.server.SimpleHTTPRequestHandler):
             "in_progress": in_progress,
             "chapters": completed_chapters
         }
+
+
+# Initialiser la base de données au démarrage
+database.init_db()
 
 print(f"Serveur lancé sur le port {PORT}")
 socketserver.TCPServer.allow_reuse_address = True

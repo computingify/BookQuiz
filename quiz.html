@@ -486,6 +486,7 @@
         
         html += `<button class="validate" onclick="calculateResults()">Valider mes réponses</button></div>`;
         container.innerHTML = html;
+        document.getElementById('quiz-zone').style.display = 'block';
         document.getElementById('result-zone').style.display = 'none';
         window.scrollTo(0, 0);
     }
