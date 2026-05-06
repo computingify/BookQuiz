@@ -8,7 +8,7 @@ from datetime import datetime
 import database
 
 BOOKS_FILE = "books_data/books.json"
-PORT = 5001
+PORT = 6000
 
 class QuizHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
