@@ -8,6 +8,15 @@
       "cover": "books_data/le-secret-du-gladiateur/le-secret-du-gladiateur-cover.jpg",
       "chapters": 15,
       "quizFile": "books_data/le-secret-du-gladiateur/quiz.json"
+    },
+    {
+      "id": "le-grenier-merveilleux",
+      "title": "Le Grenier merveilleux",
+      "author": "Georges Méliès",
+      "description": "Un roman jeunesse qui explore la vie fascinante de Georges Méliès, pionnier du cinéma, à travers les yeux d'un jeune garçon qui découvre son passé extraordinaire.",
+      "cover": "books_data/le-grenier-merveilleux/9782408053529.webp",
+      "chapters": 3,
+      "quizFile": "books_data/le-grenier-merveilleux/quiz.json"
     }
   ]
 }

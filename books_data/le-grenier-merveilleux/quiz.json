@@ -1,0 +1,96 @@
+{
+  "id": "le-grenier-merveilleux",
+  "title": "Le Grenier merveilleux de Georges Méliès",
+  "chapters": [
+    {
+      "id": 1,
+      "title": "Partie 1 : Le marchand de jouets de la gare",
+      "questions": [
+        {
+          "q": "Où se situe la boutique de jouets de Papy Georges ?",
+          "options": ["À la Gare de Lyon", "À la Gare Montparnasse", "Sous la Tour Eiffel"],
+          "r": 1,
+          "ex": "Georges Méliès a réellement fini sa carrière comme marchand de jouets et de bonbons à la Gare Montparnasse à Paris."
+        },
+        {
+          "q": "Quel est le nom du jeune garçon qui se lie d'amitié avec lui ?",
+          "options": ["Léo", "Hugo", "Arthur"],
+          "r": 0,
+          "ex": "Le héros de l'histoire s'appelle Léo ; c'est lui qui va découvrir le passé mystérieux du vieil homme."
+        },
+        {
+          "q": "Comment les gens de la gare appellent-ils Georges au début ?",
+          "options": ["Le Magicien", "Le Cinéaste", "Papy Georges"],
+          "r": 2,
+          "ex": "À cette époque, personne ne sait qu'il a été l'un des plus grands créateurs du cinéma."
+        },
+        {
+          "q": "Que dessine Léo dans son carnet qui attire l'attention de Georges ?",
+          "options": ["Des automates", "Des trains", "Des fusées"],
+          "r": 0,
+          "ex": "Léo est passionné par le dessin et les mécanismes, ce qui rappelle à Georges sa propre jeunesse."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Partie 2 : Les secrets du passé",
+      "questions": [
+        {
+          "q": "Quel était le premier métier de Georges Méliès avant le cinéma ?",
+          "options": ["Prestidigitateur (Magicien)", "Ingénieur", "Peintre"],
+          "r": 0,
+          "ex": "Méliès dirigeait le théâtre Robert-Houdin où il présentait des spectacles de magie et d'illusions."
+        },
+        {
+          "q": "Comment Georges a-t-il découvert l'ancêtre du cinéma ?",
+          "options": ["En inventant la caméra", "En assistant à une séance des frères Lumière", "En lisant un livre"],
+          "r": 1,
+          "ex": "Il était présent lors de la première projection publique du Cinématographe des frères Lumière en 1895."
+        },
+        {
+          "q": "Quel est le titre de son film le plus célèbre, cité dans le livre ?",
+          "options": ["La Sortie d'usine", "L'Arrivée d'un train", "Le Voyage dans la Lune"],
+          "r": 2,
+          "ex": "Ce film de 1902 est célèbre pour l'image de la fusée plantée dans l'œil de la Lune."
+        },
+        {
+          "q": "Pourquoi Georges a-t-il arrêté de faire des films ?",
+          "options": ["À cause d'un incendie et de la faillite", "Parce qu'il était trop vieux", "Parce qu'il n'avait plus d'idées"],
+          "r": 0,
+          "ex": "Après la guerre, son studio fait faillite et ses films sont même fondus pour récupérer l'argent et l'argentique."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Partie 3 : La magie retrouvée",
+      "questions": [
+        {
+          "q": "Que découvre-t-on de merveilleux dans le 'grenier' ?",
+          "options": ["Un trésor de pièces d'or", "Des vieux jouets cassés", "Des bobines de films et des costumes"],
+          "r": 2,
+          "ex": "Le grenier renferme les vestiges de sa gloire passée, des objets magiques et des films que l'on croyait perdus."
+        },
+        {
+          "q": "Quelle technique Méliès utilisait-il pour faire apparaître ou disparaître des objets ?",
+          "options": ["Le montage en fondu", "L'arrêt de caméra (le 'truc' par substitution)", "L'image de synthèse"],
+          "r": 1,
+          "ex": "En arrêtant la caméra et en changeant un élément avant de reprendre, il créait des illusions incroyables."
+        },
+        {
+          "q": "À la fin du livre, comment Georges est-il honoré ?",
+          "options": ["Par un grand gala et une décoration", "Par une nouvelle boutique de jouets", "Par un voyage sur la Lune"],
+          "r": 0,
+          "ex": "Le monde finit par redécouvrir son génie et lui rend hommage lors d'une cérémonie officielle."
+        },
+        {
+          "q": "Quelle est la leçon principale que Léo retient de Georges ?",
+          "options": ["Que l'argent est le plus important", "Que l'imagination peut créer des mondes", "Qu'il ne faut jamais aller à la gare"],
+          "r": 1,
+          "ex": "L'histoire montre que même dans la pauvreté, la créativité et les rêves de Méliès restent vivants."
+        }
+      ]
+    }
+  ]
+}
