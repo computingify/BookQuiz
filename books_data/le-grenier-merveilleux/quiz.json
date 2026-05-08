@@ -1,94 +1,94 @@
 {
-  "id": "le-grenier-merveilleux",
-  "title": "Le Grenier merveilleux de Georges Méliès",
+  "id": "le-grenier-merveilleux-mim",
+  "title": "Le grenier merveilleux : Georges Méliès, magicien du cinéma",
   "chapters": [
     {
       "id": 1,
-      "title": "Partie 1 : Le marchand de jouets de la gare",
+      "title": "Partie 1 : La découverte du grenier",
       "questions": [
         {
-          "q": "Où se situe la boutique de jouets de Papy Georges ?",
-          "options": ["À la Gare de Lyon", "À la Gare Montparnasse", "Sous la Tour Eiffel"],
-          "r": 1,
-          "ex": "Georges Méliès a réellement fini sa carrière comme marchand de jouets et de bonbons à la Gare Montparnasse à Paris."
-        },
-        {
-          "q": "Quel est le nom du jeune garçon qui se lie d'amitié avec lui ?",
-          "options": ["Léo", "Hugo", "Arthur"],
-          "r": 0,
-          "ex": "Le héros de l'histoire s'appelle Léo ; c'est lui qui va découvrir le passé mystérieux du vieil homme."
-        },
-        {
-          "q": "Comment les gens de la gare appellent-ils Georges au début ?",
-          "options": ["Le Magicien", "Le Cinéaste", "Papy Georges"],
+          "q": "Comment s'appellent les deux enfants héros de l'histoire ?",
+          "options": ["Léo et Maya", "Arthur et Rose", "Lilas et Tiago"],
           "r": 2,
-          "ex": "À cette époque, personne ne sait qu'il a été l'un des plus grands créateurs du cinéma."
+          "ex": "Lilas et Tiago sont les deux voisins curieux qui entrent dans la vie de Monsieur Lucien."
         },
         {
-          "q": "Que dessine Léo dans son carnet qui attire l'attention de Georges ?",
-          "options": ["Des automates", "Des trains", "Des fusées"],
+          "q": "Quel est le premier métier de Monsieur Lucien avant qu'on découvre son secret ?",
+          "options": ["Ancien cinéaste", "Marchand de jouets à la retraite", "Brocanteur"],
+          "r": 1,
+          "ex": "Au début, il est présenté comme un vieil homme grincheux qui tenait une boutique de jouets à la gare Montparnasse."
+        },
+        {
+          "q": "Pourquoi les enfants entrent-ils dans le grenier de M. Lucien ?",
+          "options": ["Pour l'aider à vider et ranger son bazar", "Pour lui voler ses jouets", "Pour se cacher pendant une partie de cache-cache"],
           "r": 0,
-          "ex": "Léo est passionné par le dessin et les mécanismes, ce qui rappelle à Georges sa propre jeunesse."
+          "ex": "Malgré son mauvais caractère, ils acceptent de l'aider à trier les cartons accumulés dans son grenier."
+        },
+        {
+          "q": "Que trouve Tiago dans un carton qui l'intrigue beaucoup ?",
+          "options": ["Des pièces d'or", "Une vieille caméra en bois", "Un automate cassé"],
+          "r": 2,
+          "ex": "Les automates étaient une grande passion de Méliès, lien direct avec son passé de magicien."
         }
       ]
     },
     {
       "id": 2,
-      "title": "Partie 2 : Les secrets du passé",
+      "title": "Partie 2 : Les secrets de la magie",
       "questions": [
         {
-          "q": "Quel était le premier métier de Georges Méliès avant le cinéma ?",
-          "options": ["Prestidigitateur (Magicien)", "Ingénieur", "Peintre"],
+          "q": "Quel célèbre magicien M. Lucien a-t-il bien connu dans sa jeunesse ?",
+          "options": ["Robert-Houdin", "Harry Houdini", "David Copperfield"],
           "r": 0,
-          "ex": "Méliès dirigeait le théâtre Robert-Houdin où il présentait des spectacles de magie et d'illusions."
+          "ex": "Méliès a racheté le théâtre de Jean-Eugène Robert-Houdin, le père de la magie moderne, pour y donner ses propres spectacles."
         },
         {
-          "q": "Comment Georges a-t-il découvert l'ancêtre du cinéma ?",
-          "options": ["En inventant la caméra", "En assistant à une séance des frères Lumière", "En lisant un livre"],
+          "q": "Quelle invention majeure M. Lucien montre-t-il aux enfants dans le grenier ?",
+          "options": ["Le premier téléphone", "Le Cinématographe", "Une machine à voyager dans le temps"],
           "r": 1,
-          "ex": "Il était présent lors de la première projection publique du Cinématographe des frères Lumière en 1895."
+          "ex": "Bien qu'inventé par les frères Lumière, Méliès l'a transformé en outil de magie pour le spectacle."
         },
         {
-          "q": "Quel est le titre de son film le plus célèbre, cité dans le livre ?",
-          "options": ["La Sortie d'usine", "L'Arrivée d'un train", "Le Voyage dans la Lune"],
-          "r": 2,
-          "ex": "Ce film de 1902 est célèbre pour l'image de la fusée plantée dans l'œil de la Lune."
+          "q": "Quel 'tour de magie' Méliès a-t-il inventé par accident avec sa caméra ?",
+          "options": ["Le saut de loup", "L'arrêt de caméra (la substitution)", "La disparition par fumée"],
+          "r": 1,
+          "ex": "En bloquant sa caméra par erreur, il a réalisé qu'il pouvait faire disparaître ou transformer des objets au montage."
         },
         {
-          "q": "Pourquoi Georges a-t-il arrêté de faire des films ?",
-          "options": ["À cause d'un incendie et de la faillite", "Parce qu'il était trop vieux", "Parce qu'il n'avait plus d'idées"],
+          "q": "Où M. Lucien avait-il construit son studio de cinéma tout en verre ?",
+          "options": ["À Montreuil", "À Hollywood", "À Paris, près de la Tour Eiffel"],
           "r": 0,
-          "ex": "Après la guerre, son studio fait faillite et ses films sont même fondus pour récupérer l'argent et l'argentique."
+          "ex": "Son studio de Montreuil était une immense serre en verre pour laisser passer la lumière du soleil, nécessaire pour filmer."
         }
       ]
     },
     {
       "id": 3,
-      "title": "Partie 3 : La magie retrouvée",
+      "title": "Partie 3 : Le Voyage dans la Lune",
       "questions": [
         {
-          "q": "Que découvre-t-on de merveilleux dans le 'grenier' ?",
-          "options": ["Un trésor de pièces d'or", "Des vieux jouets cassés", "Des bobines de films et des costumes"],
-          "r": 2,
-          "ex": "Le grenier renferme les vestiges de sa gloire passée, des objets magiques et des films que l'on croyait perdus."
-        },
-        {
-          "q": "Quelle technique Méliès utilisait-il pour faire apparaître ou disparaître des objets ?",
-          "options": ["Le montage en fondu", "L'arrêt de caméra (le 'truc' par substitution)", "L'image de synthèse"],
-          "r": 1,
-          "ex": "En arrêtant la caméra et en changeant un élément avant de reprendre, il créait des illusions incroyables."
-        },
-        {
-          "q": "À la fin du livre, comment Georges est-il honoré ?",
-          "options": ["Par un grand gala et une décoration", "Par une nouvelle boutique de jouets", "Par un voyage sur la Lune"],
+          "q": "Quel est le titre du film le plus célèbre de Georges Méliès raconté aux enfants ?",
+          "options": ["Le Voyage dans la Lune", "Le Raid Paris-Monte Carlo", "L'Homme à la tête de caoutchouc"],
           "r": 0,
-          "ex": "Le monde finit par redécouvrir son génie et lui rend hommage lors d'une cérémonie officielle."
+          "ex": "C'est son chef-d'œuvre de 1902, reconnaissable à l'image de la fusée dans l'œil de la Lune."
         },
         {
-          "q": "Quelle est la leçon principale que Léo retient de Georges ?",
-          "options": ["Que l'argent est le plus important", "Que l'imagination peut créer des mondes", "Qu'il ne faut jamais aller à la gare"],
-          "r": 1,
-          "ex": "L'histoire montre que même dans la pauvreté, la créativité et les rêves de Méliès restent vivants."
+          "q": "Comment les spectateurs ont-ils réagi lors des premières projections de ses films ?",
+          "options": ["Ils se sont endormis", "Ils ont eu peur et se sont enfuis", "Ils étaient émerveillés et applaudissaient"],
+          "r": 2,
+          "ex": "Les gens n'avaient jamais rien vu de tel ; c'était le début du grand spectacle au cinéma."
+        },
+        {
+          "q": "Pourquoi M. Lucien a-t-il fini par vendre des jouets à la gare ?",
+          "options": ["Parce qu'il a fait faillite à cause de la guerre et du changement de mode", "Parce qu'il préférait les enfants aux adultes", "Pour se cacher de la police"],
+          "r": 0,
+          "ex": "Après la Première Guerre mondiale, Méliès a tout perdu et a dû détruire une partie de ses films pour survivre."
+        },
+        {
+          "q": "Que promettent Lilas et Tiago à la fin de l'histoire ?",
+          "options": ["De devenir magiciens eux aussi", "De ne raconter son secret à personne", "De faire découvrir ses films au monde entier"],
+          "r": 2,
+          "ex": "Émerveillés, ils veulent que le génie de Georges Méliès ne soit plus jamais oublié."
         }
       ]
     }
